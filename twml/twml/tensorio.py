@@ -137,8 +137,7 @@ class TensorIO(object):
     data_type = self._spec[name]['type']
     if data_type == 'tensor':
       return self._load_tensor(name)
-    else:
-      return self._load_nontensor_data(name)
+    return self._load_nontensor_data(name)
 
   def load_all(self):
     """
@@ -157,5 +156,4 @@ class TensorIO(object):
     if k in self._spec:
       # We have a full tensor name, directly load it.
       return self._load_tensor(k)
-    else:
-      return _KeyRecorder(self)[k]
+    return _KeyRecorder(self)[k]

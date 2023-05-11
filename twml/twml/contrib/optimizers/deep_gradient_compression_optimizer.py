@@ -116,29 +116,27 @@ class DeepGradientCompressionOptimizer(tf.train.GradientDescentOptimizer):
 
       return super(DeepGradientCompressionOptimizer, self)._apply_sparse_duplicate_indices(
         sparsified_grad, var)
+    g_buffer = self.get_slot(var, "g_buffer")
 
-    else:
-      g_buffer = self.get_slot(var, "g_buffer")
+    g_buffer = tf.assign_add(g_buffer, grad)
 
-      g_buffer = tf.assign_add(g_buffer, grad)
+    top_row_indices = get_top_row_indices(g_buffer, self._density_t)
 
-      top_row_indices = get_top_row_indices(g_buffer, self._density_t)
+    if top_row_indices is None:
+      return super(DeepGradientCompressionOptimizer, self)._apply_dense(grad, var)
 
-      if top_row_indices is None:
-        return super(DeepGradientCompressionOptimizer, self)._apply_dense(grad, var)
+    sparsified_values = tf.gather(g_buffer, top_row_indices)
+    sparsified_indices = top_row_indices
 
-      sparsified_values = tf.gather(g_buffer, top_row_indices)
-      sparsified_indices = top_row_indices
+    sparsified_grad = tf.IndexedSlices(sparsified_values, sparsified_indices)
 
-      sparsified_grad = tf.IndexedSlices(sparsified_values, sparsified_indices)
+    update_var = super(DeepGradientCompressionOptimizer, self)._apply_sparse_duplicate_indices(
+      sparsified_grad, var)
 
-      update_var = super(DeepGradientCompressionOptimizer, self)._apply_sparse_duplicate_indices(
-        sparsified_grad, var)
+    update_g_buffer = tf.scatter_update(g_buffer, sparsified_indices, tf.zeros_like(
+      sparsified_values))
 
-      update_g_buffer = tf.scatter_update(g_buffer, sparsified_indices, tf.zeros_like(
-        sparsified_values))
-
-      return tf.group(*[update_var, update_g_buffer])
+    return tf.group(*[update_var, update_g_buffer])
 
   def _apply_sparse_duplicate_indices(self, grad, var):
     if not self._accumulation:
@@ -154,27 +152,25 @@ class DeepGradientCompressionOptimizer(tf.train.GradientDescentOptimizer):
 
       return super(DeepGradientCompressionOptimizer, self)._apply_sparse_duplicate_indices(
         sparsified_grad, var)
+    g_buffer = self.get_slot(var, "g_buffer")
 
-    else:
-      g_buffer = self.get_slot(var, "g_buffer")
+    g_buffer = tf.scatter_update(g_buffer, grad.indices, grad.values)
 
-      g_buffer = tf.scatter_update(g_buffer, grad.indices, grad.values)
+    top_row_indices = get_top_row_indices(g_buffer, self._density_t)
 
-      top_row_indices = get_top_row_indices(g_buffer, self._density_t)
+    if top_row_indices is None:
+      return super(DeepGradientCompressionOptimizer,
+                   self)._apply_sparse_duplicate_indices(grad, var)
 
-      if top_row_indices is None:
-        return super(DeepGradientCompressionOptimizer,
-                     self)._apply_sparse_duplicate_indices(grad, var)
+    sparsified_values = tf.gather(g_buffer, top_row_indices)
+    sparsified_indices = top_row_indices
 
-      sparsified_values = tf.gather(g_buffer, top_row_indices)
-      sparsified_indices = top_row_indices
+    sparsified_grad = tf.IndexedSlices(sparsified_values, sparsified_indices)
 
-      sparsified_grad = tf.IndexedSlices(sparsified_values, sparsified_indices)
+    update_var = super(DeepGradientCompressionOptimizer, self)._apply_sparse_duplicate_indices(
+      sparsified_grad, var)
 
-      update_var = super(DeepGradientCompressionOptimizer, self)._apply_sparse_duplicate_indices(
-        sparsified_grad, var)
+    update_g_buffer = tf.scatter_update(g_buffer, sparsified_indices, tf.zeros_like(
+      sparsified_values))
 
-      update_g_buffer = tf.scatter_update(g_buffer, sparsified_indices, tf.zeros_like(
-        sparsified_values))
-
-      return tf.group(*[update_var, update_g_buffer])
+    return tf.group(*[update_var, update_g_buffer])

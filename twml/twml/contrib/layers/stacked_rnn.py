@@ -73,8 +73,7 @@ def _create_unidirectional_rnn_cell(num_units, dropout, cell_type):
 def _create_regular_rnn_cell(num_units, dropout, cell_type, is_bidirectional):
   if is_bidirectional:
     return _create_bidirectional_rnn_cell(num_units, dropout, cell_type)
-  else:
-    return _create_unidirectional_rnn_cell(num_units, dropout, cell_type)
+  return _create_unidirectional_rnn_cell(num_units, dropout, cell_type)
 
 
 class StackedRNN(twml.layers.Layer):

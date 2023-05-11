@@ -338,8 +338,7 @@ class ExperimentTracker(object):
     """
     if self._current_run_name_suffix is not None:
       return self.path['run_name'] + self._current_run_name_suffix
-    else:
-      return self.path['run_name']
+    return self.path['run_name']
 
   @property
   def _current_run_id(self):
@@ -348,8 +347,7 @@ class ExperimentTracker(object):
     """
     if self._current_run_name_suffix is not None:
       return self.base_run_id + self._current_run_name_suffix
-    else:
-      return self.base_run_id
+    return self.base_run_id
 
   def get_run_status(self) -> str:
     if not self.disabled:

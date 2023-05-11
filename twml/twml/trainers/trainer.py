@@ -450,11 +450,10 @@ class Trainer(object):
     tf_random_seed = self._params.get('tf_random_seed', None)
     if tf_random_seed is None:
       return None
-    elif self.using_hogwild and os.environ.get('TWML_HOGWILD_TASK_TYPE') == 'worker':
+    if self.using_hogwild and os.environ.get('TWML_HOGWILD_TASK_TYPE') == 'worker':
       # chief (tf_random_seed), worker_0 (tf_random_seed + 1), worker_1 (tf_random_seed + 2)...
       return tf_random_seed + 1 + int(os.environ.get('TWML_HOGWILD_TASK_ID'))
-    else:
-      return tf_random_seed
+    return tf_random_seed
 
   def check_params(self):
     """ Verify that params has the correct key,values """
@@ -648,8 +647,7 @@ class Trainer(object):
       # Return best checkpoint if necessary
       if checkpoint_path:
         return checkpoint_path
-      else:
-        raise ValueError("Best checkpoint not found at %s." % best_checkpoint_path)
+      raise ValueError("Best checkpoint not found at %s." % best_checkpoint_path)
     else:  # Fallback to latest checkpoint from save directory
       return self.latest_checkpoint
 
@@ -842,8 +840,7 @@ class Trainer(object):
     if os.environ.get('TF_CONFIG'):
       if self._estimator.config.task_type == name:
         return True
-      else:
-        return False
+      return False
     return True
 
   def is_evaluator(self):

@@ -252,18 +252,18 @@ def computational_cost(op_or_tensor, _observed=None):
     # exclude cost of undefined ops and pruning ops
     return cost
 
-  elif op.op_def.name == 'MatMul':
+  if op.op_def.name == 'MatMul':
     shape_a = pruned_shape(op.inputs[0])
     shape_b = pruned_shape(op.inputs[1])
     return cost + shape_a[0] * shape_b[1] * (2. * shape_a[1] - 1.)
 
-  elif op.op_def.name in ['Add', 'Mul', 'BiasAdd']:
+  if op.op_def.name in ['Add', 'Mul', 'BiasAdd']:
     return cost + tf.cond(
         tf.size(op.inputs[0]) > tf.size(op.inputs[1]),
         lambda: tf.reduce_prod(pruned_shape(op.inputs[0])),
         lambda: tf.reduce_prod(pruned_shape(op.inputs[1])))
 
-  elif op.op_def.name in ['Conv2D']:
+  if op.op_def.name in ['Conv2D']:
     output_shape = pruned_shape(op.outputs[0])
     input_shape = pruned_shape(op.inputs[0])
     kernel_shape = pruned_shape(op.inputs[1])

@@ -671,19 +671,18 @@ def build_isotonic_graph_from_inputs(inputs, features, label, mode, params, conf
     if mode == 'train':
       return {'train_op': train_op, 'loss': loss}
     return {'predictions': logits, 'targets': features['labels'], 'weights': weights}
+  if isotonic_fn is None:
+    isotonic_spec = twml.util.create_module_spec(mlp_fn=isotonic_module, mode=mode, params=params)
   else:
-    if isotonic_fn is None:
-      isotonic_spec = twml.util.create_module_spec(mlp_fn=isotonic_module, mode=mode, params=params)
-    else:
-      isotonic_spec = twml.util.create_module_spec(mlp_fn=isotonic_fn, mode=mode, params=params)
-    output_hub = hub.Module(isotonic_spec,
-      name=params.calibrator_export_module_name)
-    hub.register_module_for_export(output_hub, params.calibrator_export_module_name)
-    output = output_hub(inputs, signature=params.calibrator_export_module_name)
-    output = tf.clip_by_value(output, 0, 1)
-    loss = tf.reduce_sum(tf.stop_gradient(output))
-    train_op = tf.assign_add(tf.train.get_global_step(), 1)
-    return {'train_op': train_op, 'loss': loss, 'output': output}
+    isotonic_spec = twml.util.create_module_spec(mlp_fn=isotonic_fn, mode=mode, params=params)
+  output_hub = hub.Module(isotonic_spec,
+    name=params.calibrator_export_module_name)
+  hub.register_module_for_export(output_hub, params.calibrator_export_module_name)
+  output = output_hub(inputs, signature=params.calibrator_export_module_name)
+  output = tf.clip_by_value(output, 0, 1)
+  loss = tf.reduce_sum(tf.stop_gradient(output))
+  train_op = tf.assign_add(tf.train.get_global_step(), 1)
+  return {'train_op': train_op, 'loss': loss, 'output': output}
 
 
 def build_isotonic_graph(features, label, mode, params, config=None, export_discretizer=True):

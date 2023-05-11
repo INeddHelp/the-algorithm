@@ -84,14 +84,13 @@ def parse_metric(config):
   metric_str = config["metric"].lower()
   if metric_str == "l2":
     return faiss.METRIC_L2
-  elif metric_str == "ip":
+  if metric_str == "ip":
     return faiss.METRIC_INNER_PRODUCT
-  elif metric_str == "l1":
+  if metric_str == "l1":
     return faiss.METRIC_L1
-  elif metric_str == "linf":
+  if metric_str == "linf":
     return faiss.METRIC_Linf
-  else:
-    raise Exception(f"Unknown metric: {metric_str}")
+  raise Exception(f"Unknown metric: {metric_str}")
 
 
 def run_pipeline(argv=[]):

@@ -32,8 +32,7 @@ def get_feature_values(features_values, params):
     #
     # Thus, invert the feature values, so that HashingDiscretizer can to find the correct bucket.
     return tf.multiply(features_values, -1.0)
-  else:
-    return features_values
+  return features_values
 
 def build_graph(features, label, mode, params, config=None):
   weights = None

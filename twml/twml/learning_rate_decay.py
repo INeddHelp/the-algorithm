@@ -21,7 +21,7 @@ def get_learning_rate_decay_fn(params):
   paramsv = params.values()
   if 'learning_rate_decay' not in paramsv or params.learning_rate_decay == 'no_learning_rate_decay':
     return None
-  elif params.learning_rate_decay == 'exponential_learning_rate_decay':
+  if params.learning_rate_decay == 'exponential_learning_rate_decay':
     if 'decay_steps' not in paramsv:
       raise ValueError("Expecting params.decay_steps for "
                        "params.learning_rate_decay == 'exponential'")
@@ -38,7 +38,7 @@ def get_learning_rate_decay_fn(params):
         decay_rate=params.exponential_decay_rate
       )
     return exponential_decay_fn
-  elif params.learning_rate_decay == 'piecewise_constant_learning_rate_decay':
+  if params.learning_rate_decay == 'piecewise_constant_learning_rate_decay':
     if 'piecewise_constant_boundaries' not in paramsv:
       raise ValueError("Expecting params.piecewise_constant_boundaries for "
                        "params.learning_rate_decay == 'piecewise_constant'")
@@ -55,7 +55,7 @@ def get_learning_rate_decay_fn(params):
         values=params.piecewise_constant_values
       )
     return piecewise_constant_fn
-  elif params.learning_rate_decay == 'polynomial_learning_rate_decay':
+  if params.learning_rate_decay == 'polynomial_learning_rate_decay':
     if 'decay_steps' not in paramsv:
       raise ValueError("Expecting params.decay_steps for "
                        "params.learning_rate_decay == 'polynomial'")
@@ -74,7 +74,7 @@ def get_learning_rate_decay_fn(params):
       )
     return polynomial_decay_fn
 
-  elif params.learning_rate_decay == 'inverse_learning_rate_decay':
+  if params.learning_rate_decay == 'inverse_learning_rate_decay':
     if 'min_learning_rate' not in paramsv:
       raise ValueError("Expecting params.min_learning_rate for "
                        "params.learning_rate_decay == 'inverse'")
@@ -124,7 +124,7 @@ def get_learning_rate_decay_fn(params):
 
     return bounded_inverse_time_decay_fn
 
-  elif params.learning_rate_decay == 'cosine_learning_rate_decay':
+  if params.learning_rate_decay == 'cosine_learning_rate_decay':
     if 'decay_steps' not in paramsv:
       raise ValueError("Expecting params.decay_steps for "
                        "params.learning_rate_decay == 'cosine_decay'")
@@ -140,7 +140,7 @@ def get_learning_rate_decay_fn(params):
         alpha=params.alpha
       )
     return cosine_decay_fn
-  elif params.learning_rate_decay == 'cosine_restarts_learning_rate_decay':
+  if params.learning_rate_decay == 'cosine_restarts_learning_rate_decay':
     if 'first_decay_steps' not in paramsv:
       raise ValueError("Expecting params.first_decay_steps for "
                        "params.learning_rate_decay == 'cosine_restarts_decay'")

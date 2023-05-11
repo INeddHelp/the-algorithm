@@ -18,8 +18,7 @@ class PartitionConstant(tf.keras.initializers.Constant):
       indices = tuple([slice(offset, offset + size) for offset, size in zip(offsets, shape)])
       subset = self.value[indices]
       return subset
-    else:
-      return self.value
+    return self.value
 
 
 partition_constant_initializer = PartitionConstant
@@ -40,8 +39,7 @@ class PlaceholderInitializer(tf.keras.initializers.Initializer):
       indices = tuple([slice(offset, offset + size) for offset, size in zip(offsets, shape)])
       subset = self.value[indices]
       return subset
-    else:
-      return self.value
+    return self.value
 
 
 def get_init_feed_dict():

@@ -201,8 +201,7 @@ class ZscoreNormalization(Layer):
       if input_dtype != self.data_type:
         input = tf.cast(input, self.data_type)
       return self._training_pass(input, dense_mask, input_dtype, handle_single, zero_debias)
-    else:
-      return self._infer_pass(input, dense_mask, input_dtype, handle_single)
+    return self._infer_pass(input, dense_mask, input_dtype, handle_single)
 
 
 def zscore_normalization(

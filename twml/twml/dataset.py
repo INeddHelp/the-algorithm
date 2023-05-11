@@ -69,7 +69,7 @@ def downsample_dataset(dataset, sample_rate, rate_name):
   """
   if sample_rate is None or sample_rate == 1.0:
     return dataset
-  elif not isinstance(sample_rate, numbers.Real):
+  if not isinstance(sample_rate, numbers.Real):
     raise TypeError("dataset %s must be a real number" % rate_name)
   elif sample_rate <= 0 or sample_rate > 1:
     raise ValueError("dataset %s must be in range (0, 1])" % rate_name)
