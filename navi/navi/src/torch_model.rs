@@ -88,7 +88,7 @@ pub mod torch {
         }
         #[inline(always)]
         pub fn tensor_flatten_size(t: &Tensor) -> usize {
-            t.size().into_iter().fold(1, |acc, x| acc * x) as usize
+            t.size().into_iter().product() as usize
         }
         #[inline(always)]
         pub fn tensor_to_vec<T: kind::Element>(res: &Tensor) -> Vec<T> {
