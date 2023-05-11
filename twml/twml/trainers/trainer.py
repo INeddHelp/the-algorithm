@@ -85,9 +85,7 @@ from twitter.deepbird.stats_server import utils as stats_server_utils
 from twitter.deepbird.stats_server.stats_exporter import StatsExporter
 from twitter.ml.common import metrics
 from twitter.ml.common.kubernetes import Resource, kubectl_delete_by_name
-from twitter.ml.twml.status import (
-    TrainingJobStatus,
-    )
+from twitter.ml.twml.status import TrainingJobStatus
 
 from twml.contrib.optimizers import DeepGradientCompressionOptimizer
 from twml.optimizers import OPTIMIZER_SUMMARIES, LazyAdamOptimizer, optimize_loss
