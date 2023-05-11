@@ -1,23 +1,21 @@
 #[cfg(feature = "onnx")]
 pub mod onnx {
-    use crate::TensorReturnEnum;
     use crate::bootstrap::{TensorInput, TensorInputEnum};
-    use crate::cli_args::{
-        Args, ARGS, INPUTS, MODEL_SPECS, OUTPUTS,
-    };
+    use crate::cli_args::{Args, ARGS, INPUTS, MODEL_SPECS, OUTPUTS};
     use crate::metrics::{self, CONVERTER_TIME_COLLECTOR};
     use crate::predict_service::Model;
-    use crate::{MAX_NUM_INPUTS, MAX_NUM_OUTPUTS, META_INFO, utils};
+    use crate::TensorReturnEnum;
+    use crate::{utils, MAX_NUM_INPUTS, MAX_NUM_OUTPUTS, META_INFO};
     use anyhow::Result;
     use arrayvec::ArrayVec;
     use dr_transform::converter::{BatchPredictionRequestToTorchTensorConverter, Converter};
-    use itertools::Itertools;
-    use log::{debug, info};
     use dr_transform::ort::environment::Environment;
     use dr_transform::ort::session::Session;
     use dr_transform::ort::tensor::InputTensor;
-    use dr_transform::ort::{ExecutionProvider, GraphOptimizationLevel, SessionBuilder};
     use dr_transform::ort::LoggingLevel;
+    use dr_transform::ort::{ExecutionProvider, GraphOptimizationLevel, SessionBuilder};
+    use itertools::Itertools;
+    use log::{debug, info};
     use serde_json::Value;
     use std::fmt::{Debug, Display};
     use std::sync::Arc;
@@ -111,7 +109,7 @@ pub mod onnx {
                             "inter_op_parallelism",
                             &ARGS.inter_op_parallelism[idx],
                         )
-                            .parse()?,
+                        .parse()?,
                     )?
                     .with_intra_threads(
                         utils::get_config_or(
@@ -119,10 +117,9 @@ pub mod onnx {
                             "intra_op_parallelism",
                             &ARGS.intra_op_parallelism[idx],
                         )
-                            .parse()?,
+                        .parse()?,
                     )?;
-            }
-            else {
+            } else {
                 builder = builder.with_disable_per_session_threads()?;
             }
             builder = builder
@@ -253,7 +250,8 @@ pub mod onnx {
                         //only works for batch major
                         //TODO: to_vec() obviously wasteful, especially for large batches(GPU) . Will refactor to
                         //break up output and return Vec<Vec<TensorScore>> here
-                        TensorReturnEnum::FloatTensorReturn(Box::new(output.view().as_slice().unwrap().to_vec(),
+                        TensorReturnEnum::FloatTensorReturn(Box::new(
+                            output.view().as_slice().unwrap().to_vec(),
                         )),
                         tensor_ends,
                     )
