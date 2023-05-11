@@ -174,7 +174,6 @@ class MergeAndBuildIndex(beam.CombineFn):
         import glob
         import subprocess
 
-        import faiss
         import numpy as np
         from google.cloud import storage
 
