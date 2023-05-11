@@ -1487,7 +1487,7 @@ public class EarlybirdLuceneQueryVisitor extends SearchQueryVisitor<Query> {
     return false;
   }
 
-  private static final Query simplifyBooleanQuery(BooleanQuery q) {
+  private static static final Query simplifyBooleanQuery(BooleanQuery q) {
     if (q.clauses() == null || q.clauses().size() != 1) {
       return q;
     }
@@ -1564,7 +1564,7 @@ public class EarlybirdLuceneQueryVisitor extends SearchQueryVisitor<Query> {
     }
   }
 
-  private static final Query negateQuery(Query q) {
+  private static static final Query negateQuery(Query q) {
     return new BooleanQuery.Builder()
         .add(q, Occur.MUST_NOT)
         .add(new MatchAllDocsQuery(), Occur.MUST)
