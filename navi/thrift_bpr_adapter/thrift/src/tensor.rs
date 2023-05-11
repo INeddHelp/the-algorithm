@@ -1091,19 +1091,16 @@ impl TSerializable for SparseTensor {
         break;
       }
       let field_id = field_id(&field_ident)?;
-      match field_id {
-        1 => {
-          let val = COOSparseTensor::read_from_in_protocol(i_prot)?;
-          if ret.is_none() {
-            ret = Some(SparseTensor::CooSparseTensor(val));
-          }
-          received_field_count += 1;
-        },
-        _ => {
-          i_prot.skip(field_ident.field_type)?;
-          received_field_count += 1;
-        },
-      };
+      if let 1 = field_id {
+      let val = COOSparseTensor::read_from_in_protocol(i_prot)?;
+      if ret.is_none() {
+        ret = Some(SparseTensor::CooSparseTensor(val));
+      }
+      received_field_count += 1;
+    } else {
+      i_prot.skip(field_ident.field_type)?;
+      received_field_count += 1;
+    };
       i_prot.read_field_end()?;
     }
     i_prot.read_struct_end()?;
