@@ -525,7 +525,7 @@ public abstract class EarlybirdResponseMerger implements EarlyTerminateTierMerge
       if (responseMessageBuilder.isDebugMode()) {
         responseMessageBuilder.append("Hit counts:\n");
         for (Map.Entry<Long, Integer> entry : hitCounts.entrySet()) {
-          responseMessageBuilder.append(String.format("  %10s seconds: %d hits\n",
+          responseMessageBuilder.append(String.format("  %10s seconds: %d hits%n",
               entry.getKey() / 1000, entry.getValue()));
         }
       }

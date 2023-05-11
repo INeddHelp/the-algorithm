@@ -79,20 +79,20 @@ public final class EarlybirdConfig {
 
     stringBuilder.append("Config environment: " + Config.getEnvironment() + "\n\n");
     stringBuilder.append(
-        String.format("Values from earlybird-search.yml (total %d):\n", stringMap.size()));
+        String.format("Values from earlybird-search.yml (total %d):%n", stringMap.size()));
 
     stringMap.forEach((key, value) -> {
-      stringBuilder.append(String.format("  %s: %s\n", key, value.toString()));
+      stringBuilder.append(String.format("  %s: %s%n", key, value.toString()));
       if (overrideValueMap.containsKey(key)) {
         stringBuilder.append(String.format(
-          "    override value: %s\n", overrideValueMap.get(key).toString()));
+          "    override value: %s%n", overrideValueMap.get(key).toString()));
       }
     });
 
     stringBuilder.append(String.format(
-        "\n\nAll command-line overrides (total: %d):\n", overrideValueMap.size()));
+        "%n%nAll command-line overrides (total: %d):%n", overrideValueMap.size()));
     overrideValueMap.forEach((key, value) -> {
-      stringBuilder.append(String.format("  %s: %s\n", key, value.toString()));
+      stringBuilder.append(String.format("  %s: %s%n", key, value.toString()));
     });
 
     return stringBuilder.toString();

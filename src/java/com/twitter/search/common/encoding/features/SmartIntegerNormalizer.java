@@ -127,11 +127,11 @@ public class SmartIntegerNormalizer extends ByteNormalizer {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder(String.format(
-        "Smart Integer Normalizer (numBits = %d, max = %d)\n",
+        "Smart Integer Normalizer (numBits = %d, max = %d)%n",
         this.numBits, this.maxValue));
     for (int i = 0; i < this.length; i++) {
       sb.append(String.format(
-          "[%2d] boundary = %6d, range [ %6d, %6d ), norm: %4d | %4d | %4d %s\n",
+          "[%2d] boundary = %6d, range [ %6d, %6d ), norm: %4d | %4d | %4d %s%n",
           i, boundaryValues[i],
           (int) unnormLowerBound(intToUnsignedByte(i)),
           (int) unnormUpperBound(intToUnsignedByte(i)),
