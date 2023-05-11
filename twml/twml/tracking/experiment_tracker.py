@@ -557,7 +557,8 @@ class ExperimentTracker(object):
                 )
             )
 
-    def _is_env_eligible_for_tracking(self):
+    @staticmethod
+    def _is_env_eligible_for_tracking():
         """
         Determine if experiment tracking should run in the env.
         """

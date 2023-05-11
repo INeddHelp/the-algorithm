@@ -55,7 +55,8 @@ class BlockFormatDataset(tf.data.Dataset):
                 self._filenames, self._compression_type, self._buffer_size
             )
 
-    def _inputs(self):
+    @staticmethod
+    def _inputs():
         return []
 
     @property

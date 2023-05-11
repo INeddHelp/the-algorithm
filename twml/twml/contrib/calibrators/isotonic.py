@@ -56,7 +56,8 @@ class IsotonicFeature(CalibrationFeature):
   <http://scikit-learn.org/stable/auto_examples/plot_isotonic_regression.html>`_
   '''
 
-  def _get_bin_boundaries(self, n_samples, bins, similar_bins):
+  @staticmethod
+  def _get_bin_boundaries(n_samples, bins, similar_bins):
     """
     Calculates the sample indices that define bin boundaries
 

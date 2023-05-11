@@ -1885,7 +1885,8 @@ class Trainer(object):
         # Since the timestamped folder exists but is empty, we can delete it.
         tf.io.gfile.rmtree(path_exporter)
 
-    def _is_on_gke(self) -> bool:
+    @staticmethod
+    def _is_on_gke() -> bool:
         """Returns True if running on gke."""
         cluster = os.environ.get("TWML_JOB_CLUSTER")
         if not cluster or cluster in {"smf1", "atla"}:
@@ -1956,7 +1957,8 @@ class Trainer(object):
             )
         sys.exit(0)
 
-    def write_state_to_disk(self, save_dir, filename="_SUCCESS") -> None:
+    @staticmethod
+    def write_state_to_disk(save_dir, filename="_SUCCESS") -> None:
         """Write state file to disk to indicate the state of training process. This is usually used
           to mark the state of training progress and determine the start when job restarts/resumes.
         Args:

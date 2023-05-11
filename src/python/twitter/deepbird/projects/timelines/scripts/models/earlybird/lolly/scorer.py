@@ -13,7 +13,8 @@ class LollyModelScorer(object):
     score += self._score_discretized_features(features["discretized"], value_by_feature_name)
     return score
 
-  def _score_binary_features(self, binary_features, value_by_feature_name):
+  @staticmethod
+  def _score_binary_features(binary_features, value_by_feature_name):
     score = 0.0
     for binary_feature_name, binary_feature_weight in binary_features.items():
       if binary_feature_name in value_by_feature_name:
@@ -28,7 +29,8 @@ class LollyModelScorer(object):
         score += self._find_matching_bucket_weight(buckets, feature_value)
     return score
 
-  def _find_matching_bucket_weight(self, buckets, feature_value):
+  @staticmethod
+  def _find_matching_bucket_weight(buckets, feature_value):
     for left_side, right_side, weight in buckets:
       # The Earlybird Lolly prediction engine discretizer bin membership interval is [a, b)
       if feature_value >= left_side and feature_value < right_side:

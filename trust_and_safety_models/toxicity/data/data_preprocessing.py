@@ -19,10 +19,12 @@ class DataframeCleaner(ABC):
     def __init__(self):
         pass
 
-    def _clean(self, df):
+    @staticmethod
+    def _clean(df):
         return df
 
-    def _systematic_preprocessing(self, df):
+    @staticmethod
+    def _systematic_preprocessing(df):
         df.reset_index(inplace=True, drop=True)
         if "media_url" in df.columns:
             print(".... removing tweets with media")
@@ -38,7 +40,8 @@ class DataframeCleaner(ABC):
 
         return df.reset_index(inplace=False, drop=True)
 
-    def _postprocess(self, df, *args, **kwargs):
+    @staticmethod
+    def _postprocess(df, *args, **kwargs):
         return df
 
     def __call__(self, df, *args, **kwargs):

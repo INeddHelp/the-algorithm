@@ -29,7 +29,8 @@ class Stitch(Layer):
     """
     raise NotImplementedError
 
-  def call(self, partioned_val, partioned_keys,
+  @staticmethod
+  def call(partioned_val, partioned_keys,
            partioned_indices, **kwargs):  # pylint: disable=unused-argument, arguments-differ
     """
     This layer is responsible for stitching a partioned layer together.

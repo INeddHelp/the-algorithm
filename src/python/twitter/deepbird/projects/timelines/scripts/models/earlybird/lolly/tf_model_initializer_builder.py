@@ -60,10 +60,12 @@ class TFModelInitializerBuilder:
 
     tf_model_initializer["features"]["discretized"] = bin_boundaries_and_weights
 
-  def _dedup_binary_features(self, binary_features, discretized_features):
+  @staticmethod
+  def _dedup_binary_features(binary_features, discretized_features):
     [binary_features.pop(feature_name) for feature_name in discretized_features]
 
-  def _extract_bin_boundaries_and_weights(self, discretized_feature_buckets, num_bins):
+  @staticmethod
+  def _extract_bin_boundaries_and_weights(discretized_feature_buckets, num_bins):
     bin_boundary_weight_pairs = []
 
     for bucket in discretized_feature_buckets:

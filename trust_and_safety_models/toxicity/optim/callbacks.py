@@ -12,13 +12,16 @@ import wandb
 
 
 class NothingCallback(tf.keras.callbacks.Callback):
-  def on_epoch_begin(self, epoch, logs=None):
+  @staticmethod
+  def on_epoch_begin(epoch, logs=None):
     print("ici, ", epoch)
 
-  def on_epoch_end(self, epoch, logs=None):
+  @staticmethod
+  def on_epoch_end(epoch, logs=None):
     print("fin ", epoch)
 
-  def on_train_batch_end(self, batch, logs=None):
+  @staticmethod
+  def on_train_batch_end(batch, logs=None):
     print("fin de batch ", batch)
 
 

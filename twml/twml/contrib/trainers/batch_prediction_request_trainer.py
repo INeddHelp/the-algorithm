@@ -56,7 +56,8 @@ class BatchPredictionRequestTrainer(DataRecordTrainer):  # pylint: disable=abstr
     super(BatchPredictionRequestTrainer, self).__init__(
       name=name, params=updated_params, build_graph_fn=build_graph_fn, **kwargs)
 
-  def check_batch_size_params(self, params):
+  @staticmethod
+  def check_batch_size_params(params):
     """ Verify that params has the correct key,values """
     # updated_params is an instance of tensorflow.contrib.training.HParams
     updated_params = twml.util.convert_to_hparams(params)

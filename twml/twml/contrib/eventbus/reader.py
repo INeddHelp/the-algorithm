@@ -31,7 +31,8 @@ class ReadableWrapper(object):
   def __getattr__(self, name):
     return getattr(self.internal, name)
 
-  def readable(self):
+  @staticmethod
+  def readable():
     return True
 
 

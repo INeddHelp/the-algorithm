@@ -156,14 +156,17 @@ class MergeAndBuildIndex(beam.CombineFn):
         self.metric = metric
         self.gpu = gpu
 
-    def create_accumulator(self):
+    @staticmethod
+    def create_accumulator():
         return []
 
-    def add_input(self, accumulator, element):
+    @staticmethod
+    def add_input(accumulator, element):
         accumulator.append(element)
         return accumulator
 
-    def merge_accumulators(self, accumulators):
+    @staticmethod
+    def merge_accumulators(accumulators):
         merged = []
         for accum in accumulators:
             merged.extend(accum)
