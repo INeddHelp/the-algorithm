@@ -111,7 +111,7 @@ public abstract class EarlybirdQueryHelper {
     return luceneQuery;
   }
 
-  private static final org.apache.lucene.search.Query wrapWithHitAttributionCollector(
+  private static static final org.apache.lucene.search.Query wrapWithHitAttributionCollector(
       org.apache.lucene.search.Query luceneQuery,
       Schema.FieldInfo fieldInfo,
       int nodeRank,
