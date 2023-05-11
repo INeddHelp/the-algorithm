@@ -71,9 +71,7 @@ class ExperimentTracker(object):
             logging.warning(
                 "Please stop using HParams and use python dicts. HParams are removed in TF 2"
             )
-            self._params = dict(
-                (k, v) for k, v in params.values().items() if v != "null"
-            )
+            self._params = {k: v for k, v in params.values().items() if v != "null"}
         self._run_config = run_config
         self._graceful_shutdown_port = self._params.get("health_port")
 
