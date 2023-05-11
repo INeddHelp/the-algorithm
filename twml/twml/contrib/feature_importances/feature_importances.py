@@ -43,7 +43,8 @@ def _repartition(feature_list_queue, fnames_ftypes, split_feature_group_on_perio
   Returns:
     Updated queue with each group in fnames_ftypes
   """
-  assert len(fnames_ftypes) > 1
+  if len(fnames_ftypes) <= 1:
+    raise AssertionError
 
   split_character = "." if split_feature_group_on_period else None
   # Compute the longest prefix of the words
@@ -53,7 +54,8 @@ def _repartition(feature_list_queue, fnames_ftypes, split_feature_group_on_perio
   # Separate the features by prefix
   prefix_to_features = defaultdict(list)
   for fname, ftype in fnames_ftypes:
-    assert fname.startswith(prefix)
+    if not fname.startswith(prefix):
+      raise AssertionError
     new_prefix = _expand_prefix(fname=fname, prefix=prefix, split_character=split_character)
     prefix_to_features[new_prefix].append((fname, ftype))
 
@@ -61,7 +63,8 @@ def _repartition(feature_list_queue, fnames_ftypes, split_feature_group_on_perio
   for new_prefix, fname_ftype_list in prefix_to_features.items():
     extended_new_prefix = longest_common_prefix(
       strings=[fname for fname, _ in fname_ftype_list], split_character=split_character)
-    assert extended_new_prefix.startswith(new_prefix)
+    if not extended_new_prefix.startswith(new_prefix):
+      raise AssertionError
     feature_list_queue.put((extended_new_prefix, fname_ftype_list))
   return feature_list_queue
 
@@ -199,7 +202,8 @@ def _feature_importances_tree_algorithm(
     while not feature_list_queue.empty():
       # Pop the queue. We should never have an empty list in the queue
       prefix, fnames_ftypes = feature_list_queue.get()
-      assert len(fnames_ftypes) > 0
+      if len(fnames_ftypes) <= 0:
+        raise AssertionError
 
       # Compute performance from permuting all features in fname_ftypes
       logging.info(

@@ -238,7 +238,8 @@ class MergeAndBuildIndex(beam.CombineFn):
         logging.info(f"Done writing indices to local {local_path}")
 
         logging.info(f"Uploading to GCS with path {self.gcs_output_path}")
-        assert os.path.isdir(local_path)
+        if not os.path.isdir(local_path):
+            raise AssertionError
         for local_file in glob.glob(local_path + "/*"):
             remote_path = os.path.join(
                 self.gcs_output_path.split(

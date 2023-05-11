@@ -121,7 +121,8 @@ class HashingDiscretizer(Layer):
     if isinstance(inputs, tf.SparseTensor):
       inputs = twml.SparseTensor.from_tf(inputs)
 
-    assert(isinstance(inputs, twml.SparseTensor))
+    if not (isinstance(inputs, twml.SparseTensor)):
+      raise AssertionError
 
     # sparse column indices
     ids = inputs.ids

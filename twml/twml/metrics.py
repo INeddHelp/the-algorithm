@@ -1181,14 +1181,17 @@ def get_multi_binary_class_metric_fn(metrics, classes=None, class_dim=1):
 
     shape = labels.get_shape()
     # basic sanity check: multi_metric dimension must exist
-    assert len(shape) > class_dim, "Dimension specified by class_dim does not exist."
+    if len(shape) <= class_dim:
+      raise AssertionError("Dimension specified by class_dim does not exist.")
 
     num_labels = shape[class_dim]
     # If we are doing multi-class / multi-label metric, the number of classes / labels must
     # be know at graph construction time.  This dimension cannot have size None.
-    assert num_labels is not None, "The multi-metric dimension cannot be None."
-    assert classes is None or len(classes) == num_labels, (
-      "Number of classes must match the number of labels")
+    if num_labels is None:
+      raise AssertionError("The multi-metric dimension cannot be None.")
+    if not (classes is None or len(classes) == num_labels):
+      raise AssertionError(
+        "Number of classes must match the number of labels")
 
     weights_shape = weights.get_shape() if weights is not None else None
     if weights_shape is None:

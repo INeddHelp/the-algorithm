@@ -158,8 +158,10 @@ def load_initializers_from_csv(
   weights = list(vocab.values())
 
   weights = np.asarray(weights, dtype=np.float32)
-  assert weights.shape[0] == len(vocab)
-  assert weights.shape[1] == embedding_size
+  if weights.shape[0] != len(vocab):
+    raise AssertionError
+  if weights.shape[1] != embedding_size:
+    raise AssertionError
 
   vocab_initializer = tf.constant_initializer(words, tf.string)
   weight_initializer = twml.contrib.initializers.PartitionConstant(weights, tf.float32)

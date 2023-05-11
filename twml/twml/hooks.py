@@ -80,7 +80,8 @@ class GetMetricsHook(tf.train.SessionRunHook):
   def begin(self):
     """ sets the global_step_tensor and metric tensor"""
     self._metric_tensors = self._get_metrics_fn()
-    assert isinstance(self._metric_tensors, dict)
+    if not isinstance(self._metric_tensors, dict):
+      raise AssertionError
 
   def end(self, session):
     self.metric_values = session.run(self._metric_tensors)
@@ -241,7 +242,8 @@ class EarlyStopHook(GetMetricsHook):
         "Found new %s %s=%f @ epoch %d",
         self._early_stop_name, self._metric, self._best_metric, epoch)
       # backup the file to checkpoint_dir/best_checkpoint
-      assert self._latest_checkpoint_path, "expecting latest checkpoint"
+      if not self._latest_checkpoint_path:
+        raise AssertionError("expecting latest checkpoint")
       logging.info("Backing up " + self._latest_checkpoint_path)
 
       try:
@@ -320,7 +322,8 @@ class EarlyStopHook(GetMetricsHook):
     super(EarlyStopHook, self).begin()
     self._latest_checkpoint_path = tf.train.latest_checkpoint(self._checkpoint_dir)
 
-    assert self._latest_checkpoint_path, "expecting latest checkpoint"
+    if not self._latest_checkpoint_path:
+      raise AssertionError("expecting latest checkpoint")
     # Backup to temporary directory
     try:
       twml.util.backup_checkpoint(
