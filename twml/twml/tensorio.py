@@ -18,7 +18,9 @@ For user-friendliness, the quotes are removed from the tensor names.
 
 # helper class used to assist hierarchical key access by remembering intermediate keys.
 class _KeyRecorder(object):
-    def __init__(self, tensorio, keys=[]):
+    def __init__(self, tensorio, keys=None):
+        if keys is None:
+            keys = []
         self.tensorio = tensorio
         self.keys = keys
 

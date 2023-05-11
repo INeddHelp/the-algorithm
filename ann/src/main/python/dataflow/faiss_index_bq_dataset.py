@@ -104,7 +104,9 @@ def parse_metric(config):
     raise Exception(f"Unknown metric: {metric_str}")
 
 
-def run_pipeline(argv=[]):
+def run_pipeline(argv=None):
+    if argv is None:
+        argv = []
     config = parse_d6w_config(argv)
     argv_with_extras = argv
     if config["gpu"]:
