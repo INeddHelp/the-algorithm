@@ -1,6 +1,6 @@
 use anyhow::Result;
 use log::{info, warn};
-use x509_parser::{prelude::{parse_x509_pem}, parse_x509_certificate};
+use x509_parser::{prelude::parse_x509_pem, parse_x509_certificate};
 use std::collections::HashMap;
 use tokio::time::Instant;
 use tonic::{
