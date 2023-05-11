@@ -81,7 +81,7 @@ public class QuotaModule extends TwitterModule {
   ConfigBasedQuotaConfig providesConfigBasedQuotaConfig(
       @Nullable @Named(NAMED_QUOTA_CONFIG_PATH) String quotaConfigPath,
       @Nullable @Named(NAMED_CLIENT_QUOTA_KEY) String clientQuotaKey,
-      @Nullable @Named(NAMED_REQUIRE_QUOTA_CONFIG_FOR_CLIENTS) boolean requireQuotaConfigForClients,
+      @Named(NAMED_REQUIRE_QUOTA_CONFIG_FOR_CLIENTS) boolean requireQuotaConfigForClients,
       Clock clock
   ) throws Exception {
     ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(
