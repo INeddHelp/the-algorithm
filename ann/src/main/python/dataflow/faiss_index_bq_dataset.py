@@ -173,8 +173,6 @@ class MergeAndBuildIndex(beam.CombineFn):
         # Reimports are needed on workers
         import glob
         import subprocess
-
-        import faiss
         import numpy as np
         from google.cloud import storage
 
