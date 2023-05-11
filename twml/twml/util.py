@@ -638,8 +638,10 @@ def list_files_by_datetime(
     if end_datetime is None:
         end_datetime = start_datetime
 
-    assert parallelism > 0
-    assert start_datetime <= end_datetime
+    if parallelism <= 0:
+        raise AssertionError
+    if start_datetime > end_datetime:
+        raise AssertionError
 
     if isinstance(start_datetime, str):
         start_datetime = datetime.strptime(
@@ -648,7 +650,8 @@ def list_files_by_datetime(
     if isinstance(end_datetime, str):
         end_datetime = datetime.strptime(end_datetime, datetime_prefix_format)
 
-    assert isinstance(start_datetime, datetime)
+    if not isinstance(start_datetime, datetime):
+        raise AssertionError
     if not isinstance(end_datetime, datetime):
         raise AssertionError
 
@@ -892,7 +895,8 @@ def file_exist_in_dir(directory: str, filename: str) -> bool:
 
 def copy_to_local(remote, local, filename, overwrite=False):
     """Function to file from remote directory to local directory."""
-    assert "hdfs://" not in local
+    if "hdfs://" in local:
+        raise AssertionError
     tf.io.gfile.makedirs(local)
     return tf.io.gfile.copy(
         os.path.join(remote, filename),

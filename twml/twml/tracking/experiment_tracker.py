@@ -220,9 +220,10 @@ class ExperimentTracker(object):
         if self.disabled or eval_hooks is None:
             yield None
         else:
-            assert (
-                self._current_tracker_hook is None
-            ), "experiment tracking has been started already"
+            if (
+                self._current_tracker_hook is not None
+            ):
+                raise AssertionError("experiment tracking has been started already")
 
             if name is not None:
                 self._current_run_name_suffix = "_" + name
