@@ -91,9 +91,7 @@ def get_scope_dict(init_dir, incoming_scope_name, current_scope_name, model_name
             new_scope = saved_scope.replace(
                 incoming_scope_name, current_scope_name, 1)
             # create key in init_map
-            if (
-                saved_scope not in init_map
-            ):  # pylint: disable=dict-keys-not-iterating
+            if saved_scope not in init_map:  # pylint: disable=dict-keys-not-iterating
                 init_map[saved_scope] = new_scope
     return init_map
 
@@ -147,16 +145,10 @@ def get_init_map(
         exclude_scopes=exclude_name_scopes,
     )
 
-    if (
-        name_scope_to_prepend is not None
-        and not name_scope_to_prepend.endswith("/")
-    ):
+    if name_scope_to_prepend is not None and not name_scope_to_prepend.endswith("/"):
         name_scope_to_prepend += "/"
 
-    if (
-        name_scope_to_remove is not None
-        and not name_scope_to_remove.endswith("/")
-    ):
+    if name_scope_to_remove is not None and not name_scope_to_remove.endswith("/"):
         name_scope_to_remove += "/"
 
     init_map = {}
