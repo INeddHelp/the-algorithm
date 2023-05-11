@@ -4,8 +4,6 @@ pub mod torch {
     use std::fmt::Display;
     use std::string::String;
 
-    use crate::TensorReturnEnum;
-    use crate::SerializedInput;
     use crate::bootstrap::TensorInput;
     use crate::cli_args::{Args, ARGS, MODEL_SPECS};
     use crate::metrics;
@@ -13,6 +11,8 @@ pub mod torch {
         INFERENCE_FAILED_REQUESTS_BY_MODEL, NUM_REQUESTS_FAILED, NUM_REQUESTS_FAILED_BY_MODEL,
     };
     use crate::predict_service::Model;
+    use crate::SerializedInput;
+    use crate::TensorReturnEnum;
     use anyhow::Result;
     use dr_transform::converter::BatchPredictionRequestToTorchTensorConverter;
     use dr_transform::converter::Converter;
@@ -88,7 +88,7 @@ pub mod torch {
         }
         #[inline(always)]
         pub fn tensor_flatten_size(t: &Tensor) -> usize {
-            t.size().into_iter().fold(1, |acc, x| acc * x) as usize
+            t.size().into_iter().product() as usize
         }
         #[inline(always)]
         pub fn tensor_to_vec<T: kind::Element>(res: &Tensor) -> Vec<T> {
