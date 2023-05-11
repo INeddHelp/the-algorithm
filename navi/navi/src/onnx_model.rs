@@ -55,7 +55,7 @@ pub mod onnx {
     }
     impl Drop for OnnxModel {
         fn drop(&mut self) {
-            if ARGS.profiling != None {
+            if ARGS.profiling.is_some() {
                 self.session.end_profiling().map_or_else(
                     |e| {
                         info!("end profiling with some error:{:?}", e);
