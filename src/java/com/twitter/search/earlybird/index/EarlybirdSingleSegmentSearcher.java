@@ -395,7 +395,7 @@ public class EarlybirdSingleSegmentSearcher extends EarlybirdLuceneSearcher {
       if (metadata.isSetExplanation()) {
         sb.append(metadata.getExplanation());
       }
-      sb.append(String.format("TweetId=%d (%s %s), UserId=%d (%s %s), Term=%s\n",
+      sb.append(String.format("TweetId=%d (%s %s), UserId=%d (%s %s), Term=%s%n",
           statusID,
           isOffensiveFlagSet ? "OFFENSIVE" : "",
           isSensitiveFlagSet ? "SENSITIVE" : "",

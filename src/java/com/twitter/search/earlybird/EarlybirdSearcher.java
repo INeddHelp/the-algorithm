@@ -424,22 +424,22 @@ public class EarlybirdSearcher {
       return searchInternal();
 
     } catch (TransientException e) {
-      LOG.error(String.format("Transient exception in search() for EarlybirdRequest:\n%s", request),
+      LOG.error(String.format("Transient exception in search() for EarlybirdRequest:%n%s", request),
                 e);
       appendMessage(e.getMessage());
       return respondError(EarlybirdResponseCode.TRANSIENT_ERROR);
     } catch (ClientException e) {
-      LOG.warn(String.format("Client exception in search() %s for EarlybirdRequest:\n %s",
+      LOG.warn(String.format("Client exception in search() %s for EarlybirdRequest:%n %s",
           e, request));
       appendMessage(e.getMessage());
       return respondError(EarlybirdResponseCode.CLIENT_ERROR);
     } catch (Exception e) {
-      LOG.warn(String.format("Uncaught exception in search() for EarlybirdRequest:\n%s", request),
+      LOG.warn(String.format("Uncaught exception in search() for EarlybirdRequest:%n%s", request),
                e);
       appendMessage(e.getMessage());
       return respondError(EarlybirdResponseCode.TRANSIENT_ERROR);
     } catch (AssertionError e) {
-      LOG.warn(String.format("Assertion error in search() for EarlybirdRequest:\n%s", request), e);
+      LOG.warn(String.format("Assertion error in search() for EarlybirdRequest:%n%s", request), e);
       appendMessage(e.getMessage());
       return respondError(EarlybirdResponseCode.TRANSIENT_ERROR);
     } catch (Error e) {
