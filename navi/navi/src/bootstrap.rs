@@ -1,12 +1,12 @@
 use anyhow::Result;
 use log::{info, warn};
-use x509_parser::{prelude::{parse_x509_pem}, parse_x509_certificate};
 use std::collections::HashMap;
 use tokio::time::Instant;
 use tonic::{
-    Request,
-    Response, Status, transport::{Certificate, Identity, Server, ServerTlsConfig},
+    transport::{Certificate, Identity, Server, ServerTlsConfig},
+    Request, Response, Status,
 };
+use x509_parser::{parse_x509_certificate, prelude::parse_x509_pem};
 
 // protobuf related
 use crate::tf_proto::tensorflow_serving::{
@@ -14,25 +14,29 @@ use crate::tf_proto::tensorflow_serving::{
     GetModelMetadataResponse, MultiInferenceRequest, MultiInferenceResponse, PredictRequest,
     PredictResponse, RegressionRequest, RegressionResponse,
 };
-use crate::{kf_serving::{
-    grpc_inference_service_server::GrpcInferenceService, ModelInferRequest, ModelInferResponse,
-    ModelMetadataRequest, ModelMetadataResponse, ModelReadyRequest, ModelReadyResponse,
-    ServerLiveRequest, ServerLiveResponse, ServerMetadataRequest, ServerMetadataResponse,
-    ServerReadyRequest, ServerReadyResponse,
-}, ModelFactory, tf_proto::tensorflow_serving::prediction_service_server::{
-    PredictionService, PredictionServiceServer,
-}, VERSION, NAME};
+use crate::{
+    kf_serving::{
+        grpc_inference_service_server::GrpcInferenceService, ModelInferRequest, ModelInferResponse,
+        ModelMetadataRequest, ModelMetadataResponse, ModelReadyRequest, ModelReadyResponse,
+        ServerLiveRequest, ServerLiveResponse, ServerMetadataRequest, ServerMetadataResponse,
+        ServerReadyRequest, ServerReadyResponse,
+    },
+    tf_proto::tensorflow_serving::prediction_service_server::{
+        PredictionService, PredictionServiceServer,
+    },
+    ModelFactory, NAME, VERSION,
+};
 
-use crate::PredictResult;
 use crate::cli_args::{ARGS, INPUTS, OUTPUTS};
 use crate::metrics::{
-    NAVI_VERSION, NUM_PREDICTIONS, NUM_REQUESTS_FAILED, NUM_REQUESTS_FAILED_BY_MODEL,
-    NUM_REQUESTS_RECEIVED, NUM_REQUESTS_RECEIVED_BY_MODEL, RESPONSE_TIME_COLLECTOR,
-    CERT_EXPIRY_EPOCH
+    CERT_EXPIRY_EPOCH, NAVI_VERSION, NUM_PREDICTIONS, NUM_REQUESTS_FAILED,
+    NUM_REQUESTS_FAILED_BY_MODEL, NUM_REQUESTS_RECEIVED, NUM_REQUESTS_RECEIVED_BY_MODEL,
+    RESPONSE_TIME_COLLECTOR,
 };
 use crate::predict_service::{Model, PredictService};
 use crate::tf_proto::tensorflow_serving::model_spec::VersionChoice::Version;
 use crate::tf_proto::tensorflow_serving::ModelSpec;
+use crate::PredictResult;
 
 #[derive(Debug)]
 pub enum TensorInputEnum {
@@ -87,7 +91,6 @@ impl TensorInputEnum {
             .unwrap() //invariant: we expect there's always rows in input_tensors
     }
 }
-
 
 ///entry point for tfServing gRPC
 #[tonic::async_trait]
@@ -209,7 +212,7 @@ impl<T: Model> PredictionService for PredictService<T> {
                         PredictResult::DropDueToOverload => Err(Status::resource_exhausted("")),
                         PredictResult::ModelNotFound(idx) => {
                             Err(Status::not_found(format!("model index {}", idx)))
-                        },
+                        }
                         PredictResult::ModelNotReady(idx) => {
                             Err(Status::unavailable(format!("model index {}", idx)))
                         }
@@ -257,7 +260,6 @@ pub fn bootstrap<T: Model>(model_factory: ModelFactory<T>) -> Result<()> {
         );
     }
 
-    
     tokio::runtime::Builder::new_multi_thread()
         .thread_name("async worker")
         .worker_threads(ARGS.num_worker_threads)
@@ -276,7 +278,8 @@ pub fn bootstrap<T: Model>(model_factory: ModelFactory<T>) -> Result<()> {
                 Server::builder()
             } else {
                 // Read the pem file as a string
-                let pem_str = std::fs::read_to_string(format!("{}/server.crt", ARGS.ssl_dir)).unwrap();
+                let pem_str =
+                    std::fs::read_to_string(format!("{}/server.crt", ARGS.ssl_dir)).unwrap();
                 let res = parse_x509_pem(&pem_str.as_bytes());
                 match res {
                     Ok((rem, pem_2)) => {
@@ -286,7 +289,7 @@ pub fn bootstrap<T: Model>(model_factory: ModelFactory<T>) -> Result<()> {
                         info!("Certificate label: {}", pem_2.label);
                         assert!(res_x509.is_ok());
                         report_expiry(res_x509.unwrap().1.validity().not_after.timestamp());
-                    },
+                    }
                     _ => panic!("PEM parsing failed: {:?}", res),
                 }
 
@@ -305,7 +308,7 @@ pub fn bootstrap<T: Model>(model_factory: ModelFactory<T>) -> Result<()> {
                 let identity = Identity::from_pem(pem.clone(), key);
                 let client_ca_cert = Certificate::from_pem(pem.clone());
                 let tls = ServerTlsConfig::new()
-                    .identity(identity) 
+                    .identity(identity)
                     .client_ca_root(client_ca_cert);
                 Server::builder()
                     .tls_config(tls)
