@@ -1177,10 +1177,10 @@ class Trainer(object):
             eval_steps = None
 
         if early_stop_patience > 0:
-            if (
-                train_max_steps is None
-            ):
-                raise AssertionError("Early stopping and max_steps=None are not compatible.")
+            if train_max_steps is None:
+                raise AssertionError(
+                    "Early stopping and max_steps=None are not compatible."
+                )
             # prepare early stopping hook (which also handles logic here)
             self._is_early_stopping = True
             early_stop_hook = twml.hooks.EarlyStopHook(
