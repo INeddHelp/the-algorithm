@@ -116,12 +116,8 @@ class HashedPercentileDiscretizer(Layer):
         # build variables
         self.output_size = tf.convert_to_tensor(1 << out_bits, tf.int64)
         self._out_bits = out_bits
-
-        hash_keys = hash_keys
         if hash_keys is None:
             hash_keys = np.empty(n_feature, dtype=np.int64)
-
-        hash_values = hash_values
         if hash_values is None:
             hash_values = np.empty(n_feature, dtype=np.int64)
 
@@ -174,7 +170,8 @@ class HashedPercentileDiscretizer(Layer):
         if isinstance(inputs, tf.SparseTensor):
             inputs = twml.SparseTensor.from_tf(inputs)
 
-        assert isinstance(inputs, twml.SparseTensor)
+        if not isinstance(inputs, twml.SparseTensor):
+            raise AssertionError
 
         # sparse column indices
         ids = inputs.ids

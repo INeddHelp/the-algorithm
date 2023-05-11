@@ -92,7 +92,7 @@ def get_scope_dict(init_dir, incoming_scope_name, current_scope_name, model_name
                 incoming_scope_name, current_scope_name, 1)
             # create key in init_map
             if (
-                saved_scope not in init_map.keys()
+                saved_scope not in init_map
             ):  # pylint: disable=dict-keys-not-iterating
                 init_map[saved_scope] = new_scope
     return init_map
@@ -147,13 +147,17 @@ def get_init_map(
         exclude_scopes=exclude_name_scopes,
     )
 
-    if name_scope_to_prepend is not None:
-        if not name_scope_to_prepend.endswith("/"):
-            name_scope_to_prepend += "/"
+    if (
+        name_scope_to_prepend is not None
+        and not name_scope_to_prepend.endswith("/")
+    ):
+        name_scope_to_prepend += "/"
 
-    if name_scope_to_remove is not None:
-        if not name_scope_to_remove.endswith("/"):
-            name_scope_to_remove += "/"
+    if (
+        name_scope_to_remove is not None
+        and not name_scope_to_remove.endswith("/")
+    ):
+        name_scope_to_remove += "/"
 
     init_map = {}
 
@@ -373,7 +377,7 @@ def dynamic_partition(features, partitions, num_partitions=2, name=None):
             # Create an empty list of lists first, will be converted to right type afterwards.
             outputs.append([None for _ in range(len(features))])
         else:
-            outputs.append(dict())
+            outputs.append({})
 
     iterable = features.items() if isinstance(
         features, dict) else enumerate(features)
@@ -486,7 +490,8 @@ def set_tensorflow_log_level(log_level):
     Note that tf.Print output are INFO logs, so setting log_level above 0 would hide
     output from tf.Print.
     """
-    assert isinstance(log_level, int) and log_level >= 0 and log_level <= 3
+    if not (isinstance(log_level, int) and log_level >= 0 and log_level <= 3):
+        raise AssertionError
     os.environ["TF_CPP_MIN_LOG_LEVEL"] = str(log_level)
 
 
@@ -652,7 +657,8 @@ def list_files_by_datetime(
         end_datetime = datetime.strptime(end_datetime, datetime_prefix_format)
 
     assert isinstance(start_datetime, datetime)
-    assert isinstance(end_datetime, datetime)
+    if not isinstance(end_datetime, datetime):
+        raise AssertionError
 
     base_path = preprocess_path(base_path)
 
@@ -976,4 +982,4 @@ def do_every_n_steps(action, num_steps):
     """
     global_step = tf.train.get_or_create_global_step()
     condition = tf.math.equal(tf.math.floormod(global_step, num_steps), 0)
-    return tf.cond(condition, action, lambda: tf.no_op())
+    return tf.cond(condition, action, tf.no_op)
