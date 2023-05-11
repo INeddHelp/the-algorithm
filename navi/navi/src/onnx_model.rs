@@ -128,12 +128,9 @@ pub mod onnx {
             builder = builder
                 .with_memory_pattern(ARGS.onnx_use_memory_pattern == "true")?
                 .with_execution_providers(&OnnxModel::ep_choices())?;
-            match &ARGS.profiling {
-                Some(p) => {
-                    debug!("Enable profiling, writing to {}", *p);
-                    builder = builder.with_profiling(p)?
-                }
-                _ => {}
+            if let Some(p) = &ARGS.profiling {
+                debug!("Enable profiling, writing to {}", *p);
+                builder = builder.with_profiling(p)?
             }
             let session = builder.with_model_from_file(&export_dir)?;
 
