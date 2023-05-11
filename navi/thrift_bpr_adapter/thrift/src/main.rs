@@ -58,15 +58,13 @@ fn logBP(bpr: BatchPredictionRequest) {
 fn logDR(dr: DataRecord) {
   println!("--------[DR]------------------");
 
-  match dr.binary_features {
-    Some(bf) => logBin(bf),
-    _ => (),
-  }
+  if let Some(bf) = dr.binary_features {
+    logBin(bf)
+}
 
-  match dr.continuous_features {
-    Some(cf) => logCF(cf),
-    _ => (),
-  }
+  if let Some(cf) = dr.continuous_features {
+    logCF(cf)
+}
   println!("------------------------------");
 }
 
