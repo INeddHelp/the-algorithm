@@ -330,14 +330,8 @@ pub mod tf {
                                 match PredictionLog::decode(&mut Cursor::new(vec))
                                     .context("can't parse PredictonLog")?
                                 {
-                                    PredictionLog {
-                                        log_metadata: _,
-                                        log_type:
-                                            Some(LogType::PredictLog(PredictLog {
-                                                request: Some(mut req),
-                                                response: _,
-                                            })),
-                                    } => {
+                                    PredictionLog { log_type:
+                                            Some(LogType::PredictLog(PredictLog { request: Some(mut req), .. })), .. } => {
                                         if warmup_cnt == ARGS.max_warmup_records {
                                             //warm up to max_warmup_records  records
                                             warn!(
