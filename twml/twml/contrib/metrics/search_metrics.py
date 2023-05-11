@@ -130,7 +130,7 @@ SUPPORTED_SEARCH_METRICS = {
 
 
 def get_search_metric_fn(binary_metrics=None, search_metrics=None,
-  ndcg_top_ks=[1, 3, 5, 10], use_binary_metrics=False):
+  ndcg_top_ks=None, use_binary_metrics=False):
   """
   Returns a function having signature:
 
@@ -205,6 +205,8 @@ def get_search_metric_fn(binary_metrics=None, search_metrics=None,
       False (default)
       Only set it to true in pointwise learning-to-rank
   """
+  if ndcg_top_ks is None:
+    ndcg_top_ks = [1, 3, 5, 10]
   # pylint: disable=dict-keys-not-iterating
 
   if ndcg_top_ks is None or not ndcg_top_ks:

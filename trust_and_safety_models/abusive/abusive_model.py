@@ -236,18 +236,20 @@ for d in [test, test_only_media, test_only_nsfw, test_no_media, test_media_not_n
 from notebook_eval_utils import SparseMultilabelEvaluator, EvalConfig
 from dataclasses import asdict
 
-def display_metrics(probs, targets, labels=labels):
-  eval_config = EvalConfig(prediction_threshold=0.5, precision_k=0.9)
-  for eval_mode, y_mask in [("implicit", np.ones(targets.shape))]:
-    print("Evaluation mode", eval_mode)
-    metrics = SparseMultilabelEvaluator.evaluate(
-        targets, np.array(probs), y_mask, classes=labels, eval_config=eval_config
-    )
-    metrics_df = pd.DataFrame.from_dict(asdict(metrics)["per_topic_metrics"]).transpose()
-    metrics_df["pos_to_neg"] = metrics_df["num_pos_samples"] / (metrics_df["num_neg_samples"] + 1)
-    display(metrics_df.median())    
-    display(metrics_df)
-    return metrics_df
+def display_metrics(probs, targets, labels=None):
+    if labels is None:
+        labels = labels
+    eval_config = EvalConfig(prediction_threshold=0.5, precision_k=0.9)
+    for eval_mode, y_mask in [("implicit", np.ones(targets.shape))]:
+      print("Evaluation mode", eval_mode)
+      metrics = SparseMultilabelEvaluator.evaluate(
+          targets, np.array(probs), y_mask, classes=labels, eval_config=eval_config
+      )
+      metrics_df = pd.DataFrame.from_dict(asdict(metrics)["per_topic_metrics"]).transpose()
+      metrics_df["pos_to_neg"] = metrics_df["num_pos_samples"] / (metrics_df["num_neg_samples"] + 1)
+      display(metrics_df.median())    
+      display(metrics_df)
+      return metrics_df
 
 
 def eval_model(model, df):
