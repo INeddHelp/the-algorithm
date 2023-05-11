@@ -1,8 +1,3 @@
-from tensorflow.python.ops.lookup_ops import (
-  index_table_from_file,
-  index_table_from_tensor,
-  index_to_string_table_from_file
-)  # noqa: F401
 
 
 """
