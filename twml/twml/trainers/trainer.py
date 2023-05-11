@@ -87,8 +87,7 @@ from twitter.ml.common import metrics
 from twitter.ml.common.kubernetes import Resource, kubectl_delete_by_name
 from twitter.ml.twml.status import (
     TrainingJobStatus,
-    get_distributed_training_job_status,
-)
+    )
 
 from twml.contrib.optimizers import DeepGradientCompressionOptimizer
 from twml.optimizers import OPTIMIZER_SUMMARIES, LazyAdamOptimizer, optimize_loss
@@ -112,7 +111,6 @@ import twitter.ml.twml.kubernetes.status as k8s_status
 import twml
 import twml.export_output_fns
 import twml.learning_rate_decay
-import twml.metrics
 
 _CLUSTER_TEMPLATE = Template(
     """{

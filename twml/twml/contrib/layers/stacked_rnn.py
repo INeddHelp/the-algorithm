@@ -1,4 +1,3 @@
-import tensorflow
 import tensorflow.compat.v1 as tf
 from twitter.deepbird.compat.v1.rnn import stack_bidirectional_dynamic_rnn
 

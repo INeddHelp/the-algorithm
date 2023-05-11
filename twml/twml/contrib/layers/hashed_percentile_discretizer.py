@@ -6,8 +6,7 @@ Implementing HashedPercentileDiscretizer Layer
 
 from twitter.deepbird.util.hashing import (
   integer_multiplicative_hashing_uniform,
-  integer_multiplicative_hashing,
-)  # noqa: F401
+  )  # noqa: F401
 
 from libtwml import percentile_discretizer_bin_indices
 import numpy as np

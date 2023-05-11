@@ -13,35 +13,20 @@ import re
 from twitter.ml.common.resources import AuroraPath
 from twitter.deepbird.hparam import HParams
 from twitter.deepbird.io.util import (
-  _get_feature_id,  # noqa: F401
-  feature_id,  # noqa: F401
-  preprocess_feature_regex,  # noqa: F401
   preprocess_path,  # noqa: F401
   sanitize_hdfs_path,  # noqa: F401
   is_string,  # noqa: F401
   list_files,  # noqa: F401
-  match_files,  # noqa: F401
-)
-from twitter.deepbird.io.legacy.util import (
-  batch_apply,  # noqa: F401
-  boolean_mask,  # noqa: F401
-  fixed_length_tensor,  # noqa: F401
-)
-from twitter.deepbird.sparse.util import (
-  convert_to_sparse,  # noqa: F401
-  limit_bits,  # noqa: F401
-)
+  )
 
 from dateutil import rrule
 from joblib import delayed, Parallel
-from six import string_types
 
 from absl import logging
 from libtwml import CLIB, OPLIB  # noqa: F401
 import tensorflow.compat.v1 as tf
 from tensorflow.python.platform import tf_logging
 import twml
-from twml.feature_config import FeatureConfigBuilder
 
 
 # big_prime is less than 2**32

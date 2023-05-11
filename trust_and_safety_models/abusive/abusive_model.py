@@ -1,5 +1,4 @@
 import datetime
-import getpass
 import os
 from dataclasses import asdict
 
@@ -18,10 +17,8 @@ from twitter.hmli.nimbus.modeling.model_config import (
     EncodingType,
     Feature,
     FeatureType,
-    LogType,
     Model,
 )
-from wandb.keras import WandbCallback
 
 physical_devices = tf.config.list_physical_devices("GPU")
 for device in physical_devices:
