@@ -1,6 +1,4 @@
-"""
-Contains the twml.layers.ZscoreNormalization layer.
-"""
+"""Contains the twml.layers.ZscoreNormalization layer."""
 import tensorflow.compat.v1 as tf
 from tensorflow.python.training import moving_averages
 
@@ -19,10 +17,16 @@ def _add_model_variable(var):
         tf.add_to_collection(tf.GraphKeys.MODEL_VARIABLES, var)
 
 
-def update_moving_variable(batch_var, moving_var, decay, zero_debias=True, name=None):
-    update_op = moving_averages.assign_moving_average(
-        moving_var, batch_var, decay, zero_debias=zero_debias, name=None
-    )
+def update_moving_variable(batch_var,
+                           moving_var,
+                           decay,
+                           zero_debias=True,
+                           name=None):
+    update_op = moving_averages.assign_moving_average(moving_var,
+                                                      batch_var,
+                                                      decay,
+                                                      zero_debias=zero_debias,
+                                                      name=None)
     _add_model_variable(moving_var)
     with tf.control_dependencies([update_op]):
         return tf.identity(moving_var)
@@ -45,7 +49,11 @@ class ZscoreNormalization(Layer):
       A layer representing the output of the ZscoreNormalization transformation.
     """
 
-    def __init__(self, decay=0.9999, data_type=tf.float64, name=None, **kwargs):
+    def __init__(self,
+                 decay=0.9999,
+                 data_type=tf.float64,
+                 name=None,
+                 **kwargs):
         super(ZscoreNormalization, self).__init__(name=name, **kwargs)
         self.epsilon = tf.constant(1.0, data_type)
         self.decay = decay
@@ -81,54 +89,53 @@ class ZscoreNormalization(Layer):
 
         return input_shape
 
-    def _training_pass(
-        self, input, dense_mask, input_dtype, handle_single, zero_debias
-    ):
+    def _training_pass(self, input, dense_mask, input_dtype, handle_single,
+                       zero_debias):
         epsilon = self.epsilon
         moving_mean, moving_var = self.moving_mean, self.moving_var
         # calculate the number of exisiting value for each feature
-        tensor_batch_num = tf.reduce_sum(
-            tf.cast(dense_mask, self.data_type), axis=0)
+        tensor_batch_num = tf.reduce_sum(tf.cast(dense_mask, self.data_type),
+                                         axis=0)
         mask_ones = tf.cast(tensor_batch_num, tf.bool)
         eps_vector = tf.fill(tf.shape(tensor_batch_num), epsilon)
         # the following filled 0 with epision
-        tensor_batch_num_eps = tf.where(
-            mask_ones, tensor_batch_num, eps_vector)
+        tensor_batch_num_eps = tf.where(mask_ones, tensor_batch_num,
+                                        eps_vector)
         tensor_batch_num_eps_broacast = tf.expand_dims(tensor_batch_num_eps, 0)
         tensor_batch_divided = input / tensor_batch_num_eps_broacast
         tensor_batch_mean = tf.reduce_sum(tensor_batch_divided, axis=0)
 
         # update moving mean here, and use it to calculate the std.
-        tensor_moving_mean = update_moving_variable(
-            tensor_batch_mean, moving_mean, self.decay, zero_debias, name="mean_ema_op"
-        )
+        tensor_moving_mean = update_moving_variable(tensor_batch_mean,
+                                                    moving_mean,
+                                                    self.decay,
+                                                    zero_debias,
+                                                    name="mean_ema_op")
 
         tensor_batch_sub_mean = input - tf.expand_dims(tensor_moving_mean, 0)
-        tensor_batch_sub_mean = tf.where(
-            dense_mask, tensor_batch_sub_mean, tf.zeros_like(
-                tensor_batch_sub_mean)
-        )
+        tensor_batch_sub_mean = tf.where(dense_mask, tensor_batch_sub_mean,
+                                         tf.zeros_like(tensor_batch_sub_mean))
         # divided by sqrt(n) before square, and then do summation for numeric stability.
         broad_sqrt_num_eps = tf.expand_dims(tf.sqrt(tensor_batch_num_eps), 0)
         tensor_batch_sub_mean_div = tensor_batch_sub_mean / broad_sqrt_num_eps
         tensor_batch_sub_mean_div_square = tf.square(tensor_batch_sub_mean_div)
-        tensor_batch_var = tf.reduce_sum(
-            tensor_batch_sub_mean_div_square, axis=0)
+        tensor_batch_var = tf.reduce_sum(tensor_batch_sub_mean_div_square,
+                                         axis=0)
 
         # update moving var here, dont replace 0 with eps before updating.
-        tensor_moving_var = update_moving_variable(
-            tensor_batch_var, moving_var, self.decay, zero_debias, name="var_ema_op"
-        )
+        tensor_moving_var = update_moving_variable(tensor_batch_var,
+                                                   moving_var,
+                                                   self.decay,
+                                                   zero_debias,
+                                                   name="var_ema_op")
 
         # if std is 0, replace it with epsilon
         tensor_moving_std = tf.sqrt(tensor_moving_var)
-        tensor_moving_std_eps = tf.where(
-            tf.equal(tensor_moving_std, 0), eps_vector, tensor_moving_std
-        )
+        tensor_moving_std_eps = tf.where(tf.equal(tensor_moving_std, 0),
+                                         eps_vector, tensor_moving_std)
 
         missing_input_norm = tensor_batch_sub_mean / tf.expand_dims(
-            tensor_moving_std_eps, 0
-        )
+            tensor_moving_std_eps, 0)
 
         if handle_single:
             # if std==0 and value not missing, reset it to 1.
@@ -151,24 +158,20 @@ class ZscoreNormalization(Layer):
         broad_mean = tf.expand_dims(testing_moving_mean, 0)
         tensor_batch_sub_mean = input - broad_mean
 
-        tensor_batch_sub_mean = tf.where(
-            dense_mask, tensor_batch_sub_mean, tf.zeros_like(
-                tensor_batch_sub_mean)
-        )
+        tensor_batch_sub_mean = tf.where(dense_mask, tensor_batch_sub_mean,
+                                         tf.zeros_like(tensor_batch_sub_mean))
         tensor_moving_std_eps = tf.where(
             tf.equal(tensor_moving_std, 0),
             tf.fill(tf.shape(tensor_moving_std), epsilon),
             tensor_moving_std,
         )
         missing_input_norm = tensor_batch_sub_mean / tf.expand_dims(
-            tensor_moving_std_eps, 0
-        )
+            tensor_moving_std_eps, 0)
         if handle_single:
             # if std==0 and value not missing, reset it to 1.
             moving_var_broad = tf.expand_dims(tensor_moving_std, 0)
             moving_var_mask_zero = tf.math.logical_not(
-                tf.cast(moving_var_broad, tf.bool)
-            )
+                tf.cast(moving_var_broad, tf.bool))
 
             missing_input_norm = tf.where(
                 tf.math.logical_and(dense_mask, moving_var_mask_zero),
@@ -177,9 +180,12 @@ class ZscoreNormalization(Layer):
             )
         return missing_input_norm
 
-    def call(
-        self, input, is_training, dense_mask=None, zero_debias=True, handle_single=False
-    ):
+    def call(self,
+             input,
+             is_training,
+             dense_mask=None,
+             zero_debias=True,
+             handle_single=False):
         """
         Args:
         -----------
@@ -206,23 +212,20 @@ class ZscoreNormalization(Layer):
         if is_training:
             if input_dtype != self.data_type:
                 input = tf.cast(input, self.data_type)
-            return self._training_pass(
-                input, dense_mask, input_dtype, handle_single, zero_debias
-            )
+            return self._training_pass(input, dense_mask, input_dtype,
+                                       handle_single, zero_debias)
         return self._infer_pass(input, dense_mask, input_dtype, handle_single)
 
 
-def zscore_normalization(
-    input,
-    is_training,
-    decay=0.9999,
-    data_type=tf.float64,
-    name=None,
-    dense_mask=None,
-    zero_debias=True,
-    handle_single=False,
-    **kwargs
-):
+def zscore_normalization(input,
+                         is_training,
+                         decay=0.9999,
+                         data_type=tf.float64,
+                         name=None,
+                         dense_mask=None,
+                         zero_debias=True,
+                         handle_single=False,
+                         **kwargs):
     """
     Args:
     ------------
@@ -248,9 +251,10 @@ def zscore_normalization(
       they will all have same values 1, in that case, make sure to set handle_single to true.
     """
 
-    norm_layer = ZscoreNormalization(
-        decay=decay, data_type=data_type, name=name, **kwargs
-    )
+    norm_layer = ZscoreNormalization(decay=decay,
+                                     data_type=data_type,
+                                     name=name,
+                                     **kwargs)
     return norm_layer(
         input,
         is_training,

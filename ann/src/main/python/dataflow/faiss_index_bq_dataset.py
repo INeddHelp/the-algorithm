@@ -19,21 +19,24 @@ def parse_d6w_config(argv=None):
     parser = argparse.ArgumentParser(
         description="See https://docbird.twitter.biz/d6w/model.html for any parameters inherited from d6w job config"
     )
-    parser.add_argument(
-        "--job_name", dest="job_name", required=True, help="d6w attribute"
-    )
-    parser.add_argument(
-        "--project", dest="project", required=True, help="d6w attribute"
-    )
+    parser.add_argument("--job_name",
+                        dest="job_name",
+                        required=True,
+                        help="d6w attribute")
+    parser.add_argument("--project",
+                        dest="project",
+                        required=True,
+                        help="d6w attribute")
     parser.add_argument(
         "--staging_location",
         dest="staging_location",
         required=True,
         help="d6w attribute",
     )
-    parser.add_argument(
-        "--temp_location", dest="temp_location", required=True, help="d6w attribute"
-    )
+    parser.add_argument("--temp_location",
+                        dest="temp_location",
+                        required=True,
+                        help="d6w attribute")
     parser.add_argument(
         "--output_location",
         dest="output_location",
@@ -79,15 +82,12 @@ def parse_d6w_config(argv=None):
     logging.warning(
         f"The following d6w config parameters will be overwritten by the defaults in "
         f"https://sourcegraph.twitter.biz/git.twitter.biz/source/-/blob/src/python/twitter/ml/common/apache_beam/__init__.py?L24\n"
-        f"{str(unknown_args)}"
-    )
+        f"{str(unknown_args)}")
     return d6w_config
 
 
 def get_bq_query():
-    """
-    Query is expected to return rows with unique entityId
-    """
+    """Query is expected to return rows with unique entityId"""
     return pkgutil.get_data(__name__, "bq.sql").decode("utf-8")
 
 
@@ -111,18 +111,14 @@ def run_pipeline(argv=None):
     argv_with_extras = argv
     if config["gpu"]:
         argv_with_extras.extend(["--experiments", "use_runner_v2"])
-        argv_with_extras.extend(
-            [
-                "--experiments",
-                "worker_accelerator=type:nvidia-tesla-t4;count:1;install-nvidia-driver",
-            ]
-        )
-        argv_with_extras.extend(
-            [
-                "--worker_harness_container_image",
-                "gcr.io/twttr-recos-ml-prod/dataflow-gpu/beam2_39_0_py3_7",
-            ]
-        )
+        argv_with_extras.extend([
+            "--experiments",
+            "worker_accelerator=type:nvidia-tesla-t4;count:1;install-nvidia-driver",
+        ])
+        argv_with_extras.extend([
+            "--worker_harness_container_image",
+            "gcr.io/twttr-recos-ml-prod/dataflow-gpu/beam2_39_0_py3_7",
+        ])
 
     options = PipelineOptions(argv_with_extras)
     output_bucket_name = urlsplit(config["output_location"]).netloc
@@ -141,15 +137,16 @@ def run_pipeline(argv=None):
                 config["factory_string"],
                 config["metric"],
                 config["gpu"],
-            )
-        )
+            ))
 
         # Make linter happy
         index_built
 
 
 class MergeAndBuildIndex(beam.CombineFn):
-    def __init__(self, bucket_name, gcs_output_path, factory_string, metric, gpu):
+
+    def __init__(self, bucket_name, gcs_output_path, factory_string, metric,
+                 gpu):
         self.bucket_name = bucket_name
         self.gcs_output_path = gcs_output_path
         self.factory_string = factory_string
@@ -208,9 +205,8 @@ class MergeAndBuildIndex(beam.CombineFn):
             logging.info("Using GPU")
 
             res = faiss.StandardGpuResources()
-            cpu_index = faiss.index_factory(
-                dimensions, self.factory_string, self.metric
-            )
+            cpu_index = faiss.index_factory(dimensions, self.factory_string,
+                                            self.metric)
             cpu_index = faiss.IndexIDMap(cpu_index)
             gpu_index = faiss.index_cpu_to_gpu(res, 0, cpu_index)
             gpu_index.train(embeds)
@@ -219,9 +215,8 @@ class MergeAndBuildIndex(beam.CombineFn):
         else:
             logging.info("Using CPU")
 
-            cpu_index = faiss.index_factory(
-                dimensions, self.factory_string, self.metric
-            )
+            cpu_index = faiss.index_factory(dimensions, self.factory_string,
+                                            self.metric)
             cpu_index = faiss.IndexIDMap(cpu_index)
             cpu_index.train(embeds)
             cpu_index.add_with_ids(embeds, ids)
@@ -241,9 +236,8 @@ class MergeAndBuildIndex(beam.CombineFn):
             raise AssertionError
         for local_file in glob.glob(local_path + "/*"):
             remote_path = os.path.join(
-                self.gcs_output_path.split(
-                    "/")[-1], local_file[1 + len(local_path):]
-            )
+                self.gcs_output_path.split("/")[-1],
+                local_file[1 + len(local_path):])
             blob = bucket.blob(remote_path)
             blob.upload_from_filename(local_file)
 
