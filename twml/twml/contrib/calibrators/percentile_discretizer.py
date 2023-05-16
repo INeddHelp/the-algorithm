@@ -219,30 +219,22 @@ class PercentileDiscretizerCalibrator(Calibrator):
 
   @property
   def bin_ids(self):
-    '''
-    Gets bin_ids
-    '''
+    '''Gets bin_ids'''
     return self._bin_ids
 
   @property
   def bin_vals(self):
-    '''
-    Gets bin_vals
-    '''
+    '''Gets bin_vals'''
     return self._bin_vals
 
   @property
   def hash_map(self):
-    '''
-    Gets hash_map
-    '''
+    '''Gets hash_map'''
     return self._hash_map
 
   @property
   def discretizer_feature_dict(self):
-    '''
-    Gets feature_dict
-    '''
+    '''Gets feature_dict'''
     return self._discretizer_feature_dict
 
   def accumulate_features(self, inputs, name):

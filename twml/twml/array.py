@@ -18,9 +18,7 @@ _NP_TO_TWML_TYPE = {
 
 
 class Array(object):
-  """
-  Wrapper class to allow numpy arrays to work with twml functions.
-  """
+  """Wrapper class to allow numpy arrays to work with twml functions."""
 
   def __init__(self, array):
     """
@@ -61,41 +59,29 @@ class Array(object):
 
   @property
   def handle(self):
-    """
-    Return the twml handle
-    """
+    """Return the twml handle"""
     return self._handle
 
   @property
   def shape(self):
-    """
-    Return the shape
-    """
+    """Return the shape"""
     return self._array.shape
 
   @property
   def ndim(self):
-    """
-    Return the shape
-    """
+    """Return the shape"""
     return self._array.ndim
 
   @property
   def array(self):
-    """
-    Return the numpy array
-    """
+    """Return the numpy array"""
     return self._array
 
   @property
   def dtype(self):
-    """
-    Return numpy dtype
-    """
+    """Return numpy dtype"""
     return self._array.dtype
 
   def __del__(self):
-    """
-    Delete the handle
-    """
+    """Delete the handle"""
     CLIB.twml_tensor_delete(self._handle)

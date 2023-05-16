@@ -1,6 +1,4 @@
-"""
-Functions to query devices being used by tensorflow
-"""
+"""Functions to query devices being used by tensorflow"""
 
 from tensorflow.python.client import device_lib
 

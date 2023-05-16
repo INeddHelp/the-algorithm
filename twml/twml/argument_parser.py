@@ -21,9 +21,7 @@ LOG_LEVELS = {
 
 
 class SortingHelpFormatter(argparse.HelpFormatter):
-  """
-  Used to sort args alphabetically in the help message.
-  """
+  """Used to sort args alphabetically in the help message."""
 
   def add_arguments(self, actions):
     actions = sorted(actions, key=attrgetter('option_strings'))
@@ -494,21 +492,15 @@ def get_trainer_parser():
 
 
 class DefaultSubcommandArgParse(argparse.ArgumentParser):
-  """
-  Subclass of argparse.ArgumentParser that sets default parser
-  """
+  """Subclass of argparse.ArgumentParser that sets default parser"""
   _DEFAULT_SUBPARSER = None
 
   def set_default_subparser(self, name):
-    """
-    sets the default subparser
-    """
+    """sets the default subparser"""
     self._DEFAULT_SUBPARSER = name
 
   def _parse_known_args(self, arg_strings, *args, **kwargs):
-    """
-    Overwrites _parse_known_args
-    """
+    """Overwrites _parse_known_args"""
     in_args = set(arg_strings)
     d_sp = self._DEFAULT_SUBPARSER
     if d_sp is not None and not {'-h', '--help'}.intersection(in_args):

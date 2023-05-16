@@ -35,9 +35,7 @@ def get_eventbus_data_record_generator(eventbus_reader):
 
 
 def get_eventbus_data_record_dataset(eventbus_reader, parse_fn, batch_size):
-  """
-  This module generates batch data for training from a data record generator.
-  """
+  """This module generates batch data for training from a data record generator."""
   dataset = tf.data.Dataset.from_generator(
     get_eventbus_data_record_generator(eventbus_reader), tf.string, tf.TensorShape([]))
   return dataset.batch(batch_size).map(parse_fn, num_parallel_calls=4).prefetch(buffer_size=10)

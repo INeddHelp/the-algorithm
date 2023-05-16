@@ -85,9 +85,7 @@ def parse_d6w_config(argv=None):
 
 
 def get_bq_query():
-    """
-    Query is expected to return rows with unique entityId
-    """
+    """Query is expected to return rows with unique entityId"""
     return pkgutil.get_data(__name__, "bq.sql").decode("utf-8")
 
 

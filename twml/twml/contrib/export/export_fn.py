@@ -1,6 +1,4 @@
-"""
-Functions for exporting models for different modes.
-"""
+"""Functions for exporting models for different modes."""
 from collections import OrderedDict
 import os
 
@@ -233,9 +231,7 @@ def export_all_models(trainer,
 
 
 def export_feature_spec(dir_path, feature_spec_dict):
-  """
-  Exports a FeatureConfig.get_feature_spec() dict to <dir_path>/feature_spec.yaml.
-  """
+  """Exports a FeatureConfig.get_feature_spec() dict to <dir_path>/feature_spec.yaml."""
   def ordered_dict_representer(dumper, data):
     return dumper.represent_mapping('tag:yaml.org,2002:map', data.items())
 

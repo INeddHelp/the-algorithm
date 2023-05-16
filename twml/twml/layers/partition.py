@@ -1,6 +1,4 @@
-"""
-Implementing partition Layer
-"""
+"""Implementing partition Layer"""
 
 
 from .layer import Layer

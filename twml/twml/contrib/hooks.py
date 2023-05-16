@@ -6,9 +6,7 @@ import tensorflow.compat.v1 as tf
 
 
 class StopAtTimeHook(tf.train.SessionRunHook):
-  """
-  Hook that stops training at a fixed datetime
-  """
+  """Hook that stops training at a fixed datetime"""
 
   def __init__(self, stop_time):
     """

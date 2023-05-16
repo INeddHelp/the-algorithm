@@ -1,6 +1,4 @@
-"""
-Wrappers around tf.estimator.Exporters to export models and save checkpoints.
-"""
+"""Wrappers around tf.estimator.Exporters to export models and save checkpoints."""
 import os
 
 import tensorflow.compat.v1 as tf

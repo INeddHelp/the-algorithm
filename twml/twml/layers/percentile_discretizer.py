@@ -113,9 +113,7 @@ class PercentileDiscretizer(Layer):
     self.cost_per_unit = cost_per_unit
 
   def build(self, input_shape):  # pylint: disable=unused-argument
-    """
-    Creates the variables of the layer
-    """
+    """Creates the variables of the layer"""
     self.built = True
 
   def call(self, inputs, keep_inputs=False, **kwargs):

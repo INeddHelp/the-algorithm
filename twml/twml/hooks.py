@@ -395,41 +395,31 @@ class MetricsUpdateHook(GetMetricsHook):
     super(MetricsUpdateHook, self).__init__(get_metrics_fn=get_metrics_fn)
 
   def report_metrics(self):
-    """
-    Triggers a metrics report.
-    """
+    """Triggers a metrics report."""
     self._timer.update_last_triggered_step(self._iter_count)
     if self.metric_values is not None:
       self._add_metrics_fn(self.metric_values)
 
   def begin(self):
-    """
-    Triggered before each epoch.
-    """
+    """Triggered before each epoch."""
     self._timer.reset()
     self._iter_count = 0
     return super(MetricsUpdateHook, self).begin()
 
   def before_run(self, run_context):
-    """
-    Triggered before each step.
-    """
+    """Triggered before each step."""
     self._should_trigger = self._timer.should_trigger_for_step(self._iter_count)
     return super(MetricsUpdateHook, self).before_run(run_context)
 
   def after_run(self, run_context, run_values):
-    """
-    Triggered after each step.
-    """
+    """Triggered after each step."""
     if self._should_trigger:
       self.report_metrics()
     self._iter_count += 1
     return super(MetricsUpdateHook, self).after_run(run_context, run_values)
 
   def end(self, session):
-    """
-    Triggered after each epoch.
-    """
+    """Triggered after each epoch."""
     self.report_metrics()
     return super(MetricsUpdateHook, self).end(session)
 

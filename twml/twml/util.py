@@ -1,6 +1,4 @@
-"""
-This module contains utility functions for twml.
-"""
+"""This module contains utility functions for twml."""
 
 import argparse
 import itertools
@@ -205,9 +203,7 @@ def get_checkpoint_variable_names(
 
 
 def to_snake_case(name):
-    """
-    Changes name to snake case
-    """
+    """Changes name to snake case"""
     intermediate = re.sub("(.)([A-Z][a-z0-9]+)", r"\1_\2", name)
     insecure = re.sub("([a-z])([A-Z])", r"\1_\2", intermediate).lower()
     # If the class is private the name starts with "_" which is not secure

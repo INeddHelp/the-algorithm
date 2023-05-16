@@ -124,9 +124,7 @@ _CLUSTER_TEMPLATE = Template(
 
 
 def init_from_checkpoint(init_dir, init_map):
-    """
-    Wrapper around tf.train.init_from_checkpoint
-    """
+    """Wrapper around tf.train.init_from_checkpoint"""
     if init_dir:
         init_dir = sanitize_hdfs_path(init_dir)
         tf.train.init_from_checkpoint(init_dir, init_map)
@@ -452,9 +450,7 @@ class Trainer(object):
         self.stats_exporter.register_metrics(self.export_gauge)
 
     def _hogwild_setup(self):
-        """
-        Setup the parameters required for hogwild.
-        """
+        """Setup the parameters required for hogwild."""
         self._num_workers = self._params.get("num_workers") or 1
         logging.info("NUM_WORKERS: %d", self._num_workers)
         if self._num_workers <= 1:
@@ -551,9 +547,7 @@ class Trainer(object):
 
     @property
     def current_estimator_spec(self):
-        """
-        returns the current estimator (warning: often reset)
-        """
+        """returns the current estimator (warning: often reset)"""
         return self._current_estimator_spec
 
     @property
@@ -589,9 +583,7 @@ class Trainer(object):
 
     @property
     def params(self):
-        """
-        returns the hyper-parameters passed to the constructor.
-        """
+        """returns the hyper-parameters passed to the constructor."""
         return self._params
 
     @staticmethod
@@ -950,17 +942,13 @@ class Trainer(object):
         return self.is_task_type("chief") or self.is_task_type("master")
 
     def is_ps(self):
-        """
-        Helper function to let you know if the task is parameter server.
-        """
+        """Helper function to let you know if the task is parameter server."""
         if os.environ.get("TF_CONFIG") and self._estimator.config.task_type == "ps":
             return True
         return False
 
     def _exit_ps_after_training_complete(self):
-        """
-        Helper function to shutdown parameter server after training job complete (either succeed or failed).
-        """
+        """Helper function to shutdown parameter server after training job complete (either succeed or failed)."""
         if not self.is_ps():
             return
 
@@ -1638,9 +1626,7 @@ class Trainer(object):
         return computed_metrics
 
     def start_tensorboard(self, port=None):
-        """
-        Start tensorboard process to visualize logs in save_dir.
-        """
+        """Start tensorboard process to visualize logs in save_dir."""
         logging.info("Starting tensorboard.")
         if self._tensorboard_handle:
             logging.warn("Tensorboard already running. Nothing done.")
@@ -1689,9 +1675,7 @@ class Trainer(object):
                     )
 
     def stop_tensorboard(self):
-        """
-        Shutdown this Trainer's associated Tensorboard.
-        """
+        """Shutdown this Trainer's associated Tensorboard."""
         if self._tensorboard_handle:
             logging.info("Shutting down tensorboard.")
             self._tensorboard_handle.kill()

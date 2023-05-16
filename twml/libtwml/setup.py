@@ -1,6 +1,4 @@
-"""
-libtwml setup.py module
-"""
+"""libtwml setup.py module"""
 from setuptools import setup, find_packages
 
 setup(

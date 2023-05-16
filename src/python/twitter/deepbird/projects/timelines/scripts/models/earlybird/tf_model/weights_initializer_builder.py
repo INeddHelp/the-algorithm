@@ -10,9 +10,7 @@ class TFModelWeightsInitializerBuilder(object):
     self.num_bits = num_bits
 
   def build(self, tf_model_initializer):
-    '''
-    :return: (bias_initializer, weight_initializer)
-    '''
+    ''':return: (bias_initializer, weight_initializer)'''
     initial_weights = np.zeros((2 ** self.num_bits, 1))
 
     features = tf_model_initializer["features"]

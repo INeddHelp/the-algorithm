@@ -1,6 +1,4 @@
-"""
-This module is responsible for running tensorboard.
-"""
+"""This module is responsible for running tensorboard."""
 import logging
 import re
 import sys

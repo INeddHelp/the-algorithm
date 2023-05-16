@@ -1,6 +1,4 @@
-"""
-This module contains the experiment tracker for tracking training in ML Metastore
-"""
+"""This module contains the experiment tracker for tracking training in ML Metastore"""
 import getpass
 import hashlib
 import os
@@ -45,9 +43,7 @@ except ImportError:
 
 
 class ExperimentTracker(object):
-    """
-    A tracker that records twml runs in ML Metastore.
-    """
+    """A tracker that records twml runs in ML Metastore."""
 
     def __init__(self, params, run_config, save_dir):
         """
@@ -420,18 +416,14 @@ class ExperimentTracker(object):
 
     @property
     def _current_run_name(self):
-        """
-        Return the current run name.
-        """
+        """Return the current run name."""
         if self._current_run_name_suffix is not None:
             return self.path["run_name"] + self._current_run_name_suffix
         return self.path["run_name"]
 
     @property
     def _current_run_id(self):
-        """
-        Return the current run id.
-        """
+        """Return the current run id."""
         if self._current_run_name_suffix is not None:
             return self.base_run_id + self._current_run_name_suffix
         return self.base_run_id
@@ -452,9 +444,7 @@ class ExperimentTracker(object):
             self._client.add_run_status(status)
 
     def _record_run(self):
-        """
-        Record the run in ML Metastore.
-        """
+        """Record the run in ML Metastore."""
         if self.disabled or not self._env_eligible_for_recording_experiment:
             return None
 
@@ -558,9 +548,7 @@ class ExperimentTracker(object):
             )
 
     def _is_env_eligible_for_tracking(self):
-        """
-        Determine if experiment tracking should run in the env.
-        """
+        """Determine if experiment tracking should run in the env."""
         is_unit_test = (
             os.environ.get("PYTEST_CURRENT_TEST") is not None
             and os.environ.get("TEST_EXP_TRACKER") is None
@@ -575,9 +563,7 @@ class ExperimentTracker(object):
 
     @classmethod
     def run_name_from_environ(cls):
-        """
-        Create run id from environment if possible.
-        """
+        """Create run id from environment if possible."""
         job_name = os.environ.get("TWML_JOB_NAME")
         job_launch_time = os.environ.get("TWML_JOB_LAUNCH_TIME")
 

@@ -1,6 +1,4 @@
-"""
-This module implements custom tf.data.datasets for twml.
-"""
+"""This module implements custom tf.data.datasets for twml."""
 import numbers
 
 import tensorflow.compat.v1 as tf
@@ -41,9 +39,7 @@ class BlockFormatDataset(tf.data.Dataset):
         super(BlockFormatDataset, self).__init__()
 
     def _as_variant_tensor(self):
-        """
-        Create the resource handle for the dataset.
-        """
+        """Create the resource handle for the dataset."""
         try:
             block_format_dataset = __import__(
                 "libtwml_internal"
@@ -75,9 +71,7 @@ class BlockFormatDataset(tf.data.Dataset):
 
 
 def downsample_dataset(dataset, sample_rate, rate_name):
-    """
-    Downsample a tf.data.Dataset at sample_rate
-    """
+    """Downsample a tf.data.Dataset at sample_rate"""
     if sample_rate is None or sample_rate == 1.0:
         return dataset
     if not isinstance(sample_rate, numbers.Real):

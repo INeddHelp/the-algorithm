@@ -1,15 +1,11 @@
-"""
-Feature configuration for DeepBird jobs returns dictionary of sparse and dense Features
-"""
+"""Feature configuration for DeepBird jobs returns dictionary of sparse and dense Features"""
 from twitter.deepbird.io.legacy.contrib import feature_config
 import twml
 
 
 class FeatureConfig(feature_config.FeatureConfig):
   def get_feature_spec(self):
-    """
-    Generates a serialization-friendly dict representing this FeatureConfig.
-    """
+    """Generates a serialization-friendly dict representing this FeatureConfig."""
     doc = super(FeatureConfig, self).get_feature_spec()
 
     # Override the class in the spec.
@@ -21,9 +17,7 @@ class FeatureConfig(feature_config.FeatureConfig):
 class FeatureConfigBuilder(feature_config.FeatureConfigBuilder):
   # Overwrite self.build() to return twml.FeatureConfig instead
   def build(self):
-    """
-    Returns an instance of FeatureConfig with the features passed to the FeatureConfigBuilder.
-    """
+    """Returns an instance of FeatureConfig with the features passed to the FeatureConfigBuilder."""
 
     (
       keep_tensors,

@@ -30,9 +30,7 @@ class CalibrationFeature(object):
     self._features_dict = defaultdict(list)
 
   def add_values(self, new_features):
-    '''
-    Extends lists to contain the values in this batch
-    '''
+    '''Extends lists to contain the values in this batch'''
     for key in new_features:
       self._features_dict[key].append(new_features[key])
 

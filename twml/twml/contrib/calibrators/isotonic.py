@@ -282,9 +282,7 @@ class IsotonicCalibrator(Calibrator):
                   Additionally this only saves the layer not the whole graph.")
 
     def calibrator_module():
-      '''
-      Way to save Isotonic layer
-      '''
+      '''Way to save Isotonic layer'''
       # The input to isotonic is a dense layer
       inputs = tf.placeholder(tf.float32)
       calibrator_layer = self.to_layer()
@@ -300,8 +298,7 @@ class IsotonicCalibrator(Calibrator):
         module.export(save_dir, session)
 
   def to_layer(self):
-    """ Returns a twml.layers.Isotonic Layer that can be used for feature discretization.
-    """
+    """Returns a twml.layers.Isotonic Layer that can be used for feature discretization."""
     if not self._calibrated:
       raise RuntimeError("Expecting prior call to calibrate()")
 

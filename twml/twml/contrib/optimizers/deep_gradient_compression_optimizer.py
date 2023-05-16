@@ -65,9 +65,7 @@ def get_top_row_indices(values, density):
 
 
 class DeepGradientCompressionOptimizer(tf.train.GradientDescentOptimizer):
-    """
-    A custom optimizer to implement Deep Gradient Compression (https://arxiv.org/abs/1712.01887).
-    """
+    """A custom optimizer to implement Deep Gradient Compression (https://arxiv.org/abs/1712.01887)."""
 
     def __init__(
         self,

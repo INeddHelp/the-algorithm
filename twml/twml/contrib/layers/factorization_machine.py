@@ -75,10 +75,7 @@ class FactorizationMachine(Layer):
     self.substract_self_cross = substract_self_cross
 
   def build(self, input_shape):
-    """
-    creates``weight`` Variable of shape``[input_size, num_latent_variables]``.
-
-    """
+    """creates``weight`` Variable of shape``[input_size, num_latent_variables]``."""
 
     shape = [input_shape[1], self.num_latent_variables]
 

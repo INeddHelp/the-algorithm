@@ -24,9 +24,7 @@ def add_weight_arguments(parser):
     )
 
 def make_weights_tensor(input_weights, label, params):
-  '''
-  Replaces the weights for each positive engagement and keeps the input weights for negative examples.
-  '''
+  '''Replaces the weights for each positive engagement and keeps the input weights for negative examples.'''
   weight_tensors = [input_weights]
   for label_name in LABEL_NAMES:
     index, default_weight = INDEX_BY_LABEL[label_name], DEFAULT_WEIGHT_BY_LABEL[label_name]

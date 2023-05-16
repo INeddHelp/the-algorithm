@@ -855,9 +855,7 @@ def build_percentile_discretizer_graph(features, label, mode, params, config=Non
 
 
 def isotonic_module(mode, params):
-    """
-    Common Isotonic Calibrator module for Hub Export
-    """
+    """Common Isotonic Calibrator module for Hub Export"""
     inputs = tf.sparse_placeholder(tf.float32, name="sparse_input")
     mlp = hub.Module(params.calibrator_load_tensorflow_module)
     logits = mlp(inputs, signature=params.export_mlp_module_name)

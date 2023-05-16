@@ -16,8 +16,7 @@ class BinaryRecordReader(object):
     pass
 
   def read(self):
-    """Read raw bytes for one record
-    """
+    """Read raw bytes for one record"""
     raise NotImplementedError
 
   def close(self):

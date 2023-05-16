@@ -1,6 +1,4 @@
-'''
-Contains implementations of functions to read input data.
-'''
+'''Contains implementations of functions to read input data.'''
 from .dataset import stream_block_format_dataset
 
 import tensorflow.compat.v1 as tf

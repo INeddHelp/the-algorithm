@@ -91,9 +91,7 @@ class HashingDiscretizer(Layer):
       self.build(input_shape=None)
 
   def build(self, input_shape):  # pylint: disable=unused-argument
-    """
-    Creates the variables of the layer
-    """
+    """Creates the variables of the layer"""
     # make sure this is last
     self.built = True
 

@@ -139,37 +139,27 @@ class FullDense(core_layers.Dense):
 
   @property
   def output_size(self):
-    """
-    Returns output_size
-    """
+    """Returns output_size"""
     return self.units
 
   @property
   def weight(self):
-    """
-    Returns weight
-    """
+    """Returns weight"""
     return self.kernel
 
   @property
   def weight_regularizer(self):
-    """
-    Returns weight_regularizer
-    """
+    """Returns weight_regularizer"""
     return self.kernel_regularizer
 
   @property
   def weight_initializer(self):
-    """
-    Returns weight_initializer
-    """
+    """Returns weight_initializer"""
     return self.kernel_initializer
 
   @property
   def weight_constraint(self):
-    """
-    Returns weight_constraint
-    """
+    """Returns weight_constraint"""
     return self.kernel_constraint
 
 

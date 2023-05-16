@@ -1,6 +1,4 @@
-"""
-Contains the twml.layers.ZscoreNormalization layer.
-"""
+"""Contains the twml.layers.ZscoreNormalization layer."""
 import tensorflow.compat.v1 as tf
 from tensorflow.python.training import moving_averages
 

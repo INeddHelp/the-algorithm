@@ -23,9 +23,7 @@ def _get_config_version(config_dict):
 
 
 def _validate_config_dict_v1(config_dict):
-  """
-  Validate spec exported by twml.FeatureConfig
-  """
+  """Validate spec exported by twml.FeatureConfig"""
   doc = config_dict
 
   def malformed_error(msg):
@@ -57,9 +55,7 @@ def _validate_config_dict_v1(config_dict):
 
 
 def _validate_config_dict_v2(config_dict):
-  """
-  Validate spec exported by twml.contrib.FeatureConfig
-  """
+  """Validate spec exported by twml.contrib.FeatureConfig"""
   doc = config_dict
 
   def malformed_error(msg):
@@ -194,9 +190,7 @@ def _create_feature_config_v2(config_dict, data_spec_path):
 
 
 def create_feature_config_from_dict(config_dict, data_spec_path):
-  """
-  Create a FeatureConfig object from a feature spec dict.
-  """
+  """Create a FeatureConfig object from a feature spec dict."""
   config_version = _get_config_version(config_dict)
   if config_version == "v1":
     _validate_config_dict_v1(config_dict)
@@ -211,9 +205,7 @@ def create_feature_config_from_dict(config_dict, data_spec_path):
 
 
 def create_feature_config(config_path, data_spec_path):
-  """
-  Create a FeatureConfig object from a feature_spec.yaml file.
-  """
+  """Create a FeatureConfig object from a feature_spec.yaml file."""
   _, ext = os.path.splitext(config_path)
   if ext not in ['.yaml', '.yml']:
     raise ValueError("create_feature_config_from_yaml: Only .yaml/.yml supported")

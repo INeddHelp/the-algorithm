@@ -76,9 +76,7 @@ def get_lambda_pair_loss(pairwise_label_scores, pairwise_predicted_scores,
 
 def _get_average_cross_entropy_loss(pairwise_label_scores, pairwise_predicted_scores,
                                     mask, pair_count, swapped_ndcg=None):
-  """
-  Average the loss for a batchPredictionRequest based on a desired number of pairs
-  """
+  """Average the loss for a batchPredictionRequest based on a desired number of pairs"""
   loss = tf.nn.sigmoid_cross_entropy_with_logits(labels=pairwise_label_scores,
     logits=pairwise_predicted_scores)
   loss = mask * loss
@@ -142,9 +140,7 @@ def get_listmle_loss(labels, predicted_scores):
 
 
 def _get_ordered_predicted_scores(labels, predicted_scores, n_data):
-  """
-  Order predicted_scores based on sorted labels
-  """
+  """Order predicted_scores based on sorted labels"""
   sorted_labels, ordered_labels_indices = tf.nn.top_k(
     tf.transpose(labels), k=n_data)
   ordered_labels_indices = tf.transpose(ordered_labels_indices)

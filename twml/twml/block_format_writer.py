@@ -5,9 +5,7 @@ from libtwml import CLIB
 
 
 class BlockFormatWriter(object):
-  """
-  Class to write block format file.
-  """
+  """Class to write block format file."""
 
   def __init__(self, file_name, records_per_block=100):
     file_name = file_name
@@ -28,9 +26,7 @@ class BlockFormatWriter(object):
 
   @property
   def handle(self):
-    """
-    Return the handle
-    """
+    """Return the handle"""
     return self._handle
 
   def write(self, class_name, record):
@@ -50,16 +46,12 @@ class BlockFormatWriter(object):
       raise RuntimeError("Error from libtwml")
 
   def flush(self):
-    """
-    Flush records in buffer to outputfile.
-    """
+    """Flush records in buffer to outputfile."""
     err = CLIB.block_format_flush(self._handle)
     if err != 1000:
       raise RuntimeError("Error from libtwml")
 
   def __del__(self):
-    """
-    Delete the handle
-    """
+    """Delete the handle"""
     if self._handle:
       CLIB.block_format_writer_delete(self._handle)

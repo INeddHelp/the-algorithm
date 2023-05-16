@@ -92,9 +92,7 @@ class TensorIO(object):
             }
 
     def list_tensors(self):
-        """
-        Returns a list of tensors saved in the given path.
-        """
+        """Returns a list of tensors saved in the given path."""
         return self._spec.keys()
 
     def _load_tensor(self, name):
@@ -134,9 +132,7 @@ class TensorIO(object):
         return tensor_info["data"]
 
     def _load(self, name):
-        """
-        Load data serialized under the given name, it could be a tensor or regular data.
-        """
+        """Load data serialized under the given name, it could be a tensor or regular data."""
         if name not in self._spec:
             raise ValueError(
                 "The specified key {} is not found in {}".format(
@@ -160,9 +156,7 @@ class TensorIO(object):
     # The below are utilities for convenience #
     ###########################################
     def __getitem__(self, k):
-        """
-        Shorthand for _load_tensor, but also supports hierarchical access like: tensorio['a']['b']['1']
-        """
+        """Shorthand for _load_tensor, but also supports hierarchical access like: tensorio['a']['b']['1']"""
         if k in self._spec:
             # We have a full tensor name, directly load it.
             return self._load_tensor(k)

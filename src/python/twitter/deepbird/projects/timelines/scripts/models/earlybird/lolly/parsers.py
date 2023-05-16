@@ -18,9 +18,7 @@ class Parser(object):
 
 
 class BiasParser(Parser):
-  '''
-  Parses the bias feature available in lolly model tsv files.
-  '''
+  '''Parses the bias feature available in lolly model tsv files.'''
 
   def pattern(self):
     '''
@@ -35,9 +33,7 @@ class BiasParser(Parser):
 
 
 class BinaryFeatureParser(Parser):
-  '''
-  Parses binary features available in lolly model tsv files.
-  '''
+  '''Parses binary features available in lolly model tsv files.'''
 
   def pattern(self):
     '''
@@ -52,9 +48,7 @@ class BinaryFeatureParser(Parser):
 
 
 class DiscretizedFeatureParser(Parser):
-  '''
-  Parses discretized features available in lolly model tsv files.
-  '''
+  '''Parses discretized features available in lolly model tsv files.'''
 
   def pattern(self):
     '''
@@ -125,9 +119,7 @@ class DBv2DataExampleParser(Parser):
       self.feature_name_by_dbv2_id[str(_get_feature_id(feature_name))] = feature_name
 
   def pattern(self):
-    '''
-    :return: a RegEx that extracts dbv2 logit, logged lolly logit, feature ids and feature values.
-    '''
+    ''':return: a RegEx that extracts dbv2 logit, logged lolly logit, feature ids and feature values.'''
     return r"\[\[([\w\.\-]+)\]\]\[\[([\w\.\-]+)\]\]\[\[([\w\.\- ]+)\]\]\[\[([\w\. ]+)\]\]"
 
   def _parse_match(self, match):

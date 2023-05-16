@@ -84,8 +84,7 @@ def _get_metrics_hook(trainer):
 
 
 def _get_feature_name_from_config(feature_config):
-  """Extract the names of the features on a feature config object
-  """
+  """Extract the names of the features on a feature config object"""
   decoded_feature_names = []
   for f in feature_config.get_feature_spec()['features'].values():
     try:

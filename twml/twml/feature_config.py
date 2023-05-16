@@ -11,9 +11,7 @@ from twitter.deepbird.io.legacy import feature_config
 
 class FeatureConfig(feature_config.FeatureConfig):
   def get_feature_spec(self):
-    """
-    Generates a serialization-friendly dict representing this FeatureConfig.
-    """
+    """Generates a serialization-friendly dict representing this FeatureConfig."""
     doc = super(FeatureConfig, self).get_feature_spec()
     # Override the class in the spec.
     doc["class"] = "twml.FeatureConfig"
@@ -23,9 +21,7 @@ class FeatureConfig(feature_config.FeatureConfig):
 class FeatureConfigBuilder(feature_config.FeatureConfigBuilder):
   def build(self):
     # Overwrite self.build() to return twml.FeatureConfig instead
-    """
-    Builds and returns FeatureConfig object.
-    """
+    """Builds and returns FeatureConfig object."""
 
     (
       features,

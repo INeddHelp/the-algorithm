@@ -1,6 +1,4 @@
-"""
-Implementing Sequential Layer container
-"""
+"""Implementing Sequential Layer container"""
 
 
 from .layer import Layer

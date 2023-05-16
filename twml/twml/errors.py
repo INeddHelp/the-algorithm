@@ -1,6 +1,4 @@
-"""
-Error classes for twml
-"""
+"""Error classes for twml"""
 
 
 class EarlyStopError(Exception):
