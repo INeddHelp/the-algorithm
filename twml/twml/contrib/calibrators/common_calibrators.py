@@ -295,11 +295,11 @@ def calibrate(trainer, params, build_graph, input_fn, debug=False):
 
     if trainer._estimator.config.is_chief:
         # overwrite the current save_dir
-        if params.overwrite_save_dir and tf.io.gfile.exists(params.calibrator_save_dir):
+        if params.overwrite_save_dir and tf.io.gfile.exists(
+                params.calibrator_save_dir):
             logging.info(
                 "Trainer overwriting existing save directory: %s (params.overwrite_save_dir)"
-                % params.calibrator_save_dir
-            )
+                % params.calibrator_save_dir)
             tf.io.gfile.rmtree(params.calibrator_save_dir)
 
         calibrator = IsotonicCalibrator(params.calibrator_num_bins)
@@ -314,9 +314,11 @@ def calibrate(trainer, params, build_graph, input_fn, debug=False):
                 "Weights need to be returned as part of the parse_fn")
         weights = features.pop("weights")
 
-        preds = build_graph(
-            features=features, label=None, mode="infer", params=params, config=None
-        )
+        preds = build_graph(features=features,
+                            label=None,
+                            mode="infer",
+                            params=params,
+                            config=None)
         init = tf.global_variables_initializer()
         table_init = tf.tables_initializer()
         with tf.Session() as sess:
@@ -327,11 +329,9 @@ def calibrate(trainer, params, build_graph, input_fn, debug=False):
             while max_steps <= 0 or count <= max_steps:
                 try:
                     weights_vals, labels_vals, preds_vals = sess.run(
-                        [weights, labels, preds["output"]]
-                    )
-                    calibrator.accumulate(
-                        preds_vals, labels_vals, weights_vals.flatten()
-                    )
+                        [weights, labels, preds["output"]])
+                    calibrator.accumulate(preds_vals, labels_vals,
+                                          weights_vals.flatten())
                 except tf.errors.OutOfRangeError:
                     break
                 count += 1
@@ -347,9 +347,8 @@ def calibrate(trainer, params, build_graph, input_fn, debug=False):
         calibrator_save_dir = twml.util.sanitize_hdfs_path(
             params.calibrator_save_dir)
         # workers wait for calibration to be ready
-        while not tf.io.gfile.exists(
-            calibrator_save_dir + os.path.sep + "tfhub_module.pb"
-        ):
+        while not tf.io.gfile.exists(calibrator_save_dir + os.path.sep +
+                                     "tfhub_module.pb"):
             logging.info("Worker waiting for calibration at %s" %
                          calibrator_save_dir)
             time.sleep(60)
@@ -367,19 +366,14 @@ def discretize(params, feature_config, input_fn, debug=False):
         Defaults to False. Returns the calibrator
     """
 
-    if (
-        os.environ.get("TWML_HOGWILD_TASK_TYPE") == "chief"
-        or "num_workers" not in params
-        or params.num_workers is None
-    ):
+    if (os.environ.get("TWML_HOGWILD_TASK_TYPE") == "chief"
+            or "num_workers" not in params or params.num_workers is None):
         # overwrite the current save_dir
         if params.overwrite_save_dir and tf.io.gfile.exists(
-            params.discretizer_save_dir
-        ):
+                params.discretizer_save_dir):
             logging.info(
                 "Trainer overwriting existing save directory: %s (params.overwrite_save_dir)"
-                % params.discretizer_save_dir
-            )
+                % params.discretizer_save_dir)
             tf.io.gfile.rmtree(params.discretizer_save_dir)
 
         config_map = feature_config()
@@ -430,9 +424,8 @@ def discretize(params, feature_config, input_fn, debug=False):
         discretizer_save_dir = twml.util.sanitize_hdfs_path(
             params.discretizer_save_dir)
         # workers wait for calibration to be ready
-        while not tf.io.gfile.exists(
-            discretizer_save_dir + os.path.sep + "tfhub_module.pb"
-        ):
+        while not tf.io.gfile.exists(discretizer_save_dir + os.path.sep +
+                                     "tfhub_module.pb"):
             logging.info("Worker waiting for calibration at %s" %
                          discretizer_save_dir)
             time.sleep(60)
@@ -615,14 +608,12 @@ def calibrate_calibrator_and_export(
     # Automatically load from the saved Tensorflow Hub module if not specified.
     if params_c.calibrator_load_tensorflow_module is None:
         path_saved_tensorflow_model = os.path.join(
-            params.save_dir, params.export_mlp_module_name
-        )
+            params.save_dir, params.export_mlp_module_name)
         params_c.calibrator_load_tensorflow_module = path_saved_tensorflow_model
 
     if "calibrator_parts_downsampling_rate" in params_c:
         params_c.train_parts_downsampling_rate = (
-            params_c.calibrator_parts_downsampling_rate
-        )
+            params_c.calibrator_parts_downsampling_rate)
     if "calibrator_save_dir" in params_c:
         params_c.save_dir = params_c.calibrator_save_dir
     if "calibrator_batch_size" in params_c:
@@ -656,8 +647,9 @@ def calibrate_calibrator_and_export(
 
         hooks = None
         if params_c.calibrator_train_steps > 0:
-            hooks = [twml.hooks.StepProgressHook(
-                params_c.calibrator_train_steps)]
+            hooks = [
+                twml.hooks.StepProgressHook(params_c.calibrator_train_steps)
+            ]
 
         def parse_fn(input_x):
             fc_parse_fn = feature_config.get_parse_fn()
@@ -666,8 +658,8 @@ def calibrate_calibrator_and_export(
             return features, labels
 
         if input_fn is None:
-            input_fn = trainer.get_train_input_fn(
-                parse_fn=parse_fn, repeat=False)
+            input_fn = trainer.get_train_input_fn(parse_fn=parse_fn,
+                                                  repeat=False)
 
         # Calibrate stage
         trainer.estimator._params.mode = "calibrate"
@@ -692,15 +684,14 @@ def calibrate_calibrator_and_export(
     else:
         # Workers wait for calibration to be ready
         final_calibrator_path = os.path.join(
-            params_c.calibrator_save_dir, params_c.calibrator_export_module_name
-        )
+            params_c.calibrator_save_dir,
+            params_c.calibrator_export_module_name)
 
         final_calibrator_path = twml.util.sanitize_hdfs_path(
             final_calibrator_path)
 
-        while not tf.io.gfile.exists(
-            final_calibrator_path + os.path.sep + "tfhub_module.pb"
-        ):
+        while not tf.io.gfile.exists(final_calibrator_path + os.path.sep +
+                                     "tfhub_module.pb"):
             logging.info("Worker waiting for calibration at %s" %
                          final_calibrator_path)
             time.sleep(60)
@@ -719,15 +710,15 @@ def calibrate_calibrator_and_export(
     trainer.hub_export(
         name=params_c.calibrator_export_module_name,
         export_task_type_overrider=export_task_type_overrider,
-        serving_input_receiver_fn=feature_config.get_serving_input_receiver_fn(),
+        serving_input_receiver_fn=feature_config.get_serving_input_receiver_fn(
+        ),
     )
 
     return trainer
 
 
-def calibrate_discretizer_and_export(
-    name, calibrator, build_graph_fn, params, feature_config
-):
+def calibrate_discretizer_and_export(name, calibrator, build_graph_fn, params,
+                                     feature_config):
     """
     Pre-set percentile discretizer calibrator.
     Args:
@@ -743,11 +734,8 @@ def calibrate_discretizer_and_export(
         feature config or input_fn which will be passed to the trainer.
     """
 
-    if (
-        os.environ.get("TWML_HOGWILD_TASK_TYPE") == "chief"
-        or "num_workers" not in params
-        or params.num_workers is None
-    ):
+    if (os.environ.get("TWML_HOGWILD_TASK_TYPE") == "chief"
+            or "num_workers" not in params or params.num_workers is None):
         # chief trains discretizer
         logging.info("Chief training discretizer")
 
@@ -772,8 +760,7 @@ def calibrate_discretizer_and_export(
             params_c.train_keep_rate = params_c.discretizer_keep_rate
         if "discretizer_parts_downsampling_rate" in params_c:
             params_c.train_parts_downsampling_rate = (
-                params_c.discretizer_parts_downsampling_rate
-            )
+                params_c.discretizer_parts_downsampling_rate)
         if "discretizer_save_dir" in params_c:
             params_c.save_dir = params_c.discretizer_save_dir
 
@@ -787,16 +774,15 @@ def calibrate_discretizer_and_export(
 
         if isinstance(feature_config, twml.feature_config.FeatureConfig):
             parse_fn = twml.parsers.get_continuous_parse_fn(feature_config)
-            input_fn = trainer.get_train_input_fn(
-                parse_fn=parse_fn, repeat=False)
+            input_fn = trainer.get_train_input_fn(parse_fn=parse_fn,
+                                                  repeat=False)
         elif callable(feature_config):
             input_fn = feature_config
         else:
             got_type = type(feature_config).__name__
             raise ValueError(
                 "Expecting feature_config to be FeatureConfig or function got %s"
-                % got_type
-            )
+                % got_type)
 
         hooks = None
         if params_c.train_steps > 0:
@@ -815,15 +801,18 @@ def calibrate_discretizer_and_export(
         discretizer_save_dir = twml.util.sanitize_hdfs_path(
             params.discretizer_save_dir)
         # workers wait for calibration to be ready
-        while not tf.io.gfile.exists(
-            discretizer_save_dir + os.path.sep + "tfhub_module.pb"
-        ):
+        while not tf.io.gfile.exists(discretizer_save_dir + os.path.sep +
+                                     "tfhub_module.pb"):
             logging.info("Worker waiting for calibration at %s" %
                          discretizer_save_dir)
             time.sleep(60)
 
 
-def build_percentile_discretizer_graph(features, label, mode, params, config=None):
+def build_percentile_discretizer_graph(features,
+                                       label,
+                                       mode,
+                                       params,
+                                       config=None):
     """
     Pre-set Percentile Discretizer Build Graph
     Follows the same signature as build_graph
@@ -868,9 +857,13 @@ def isotonic_module(mode, params):
     )
 
 
-def build_isotonic_graph_from_inputs(
-    inputs, features, label, mode, params, config=None, isotonic_fn=None
-):
+def build_isotonic_graph_from_inputs(inputs,
+                                     features,
+                                     label,
+                                     mode,
+                                     params,
+                                     config=None,
+                                     isotonic_fn=None):
     """
     Helper function to build_isotonic_graph
     Pre-set Isotonic Calibrator Build Graph
@@ -879,9 +872,8 @@ def build_isotonic_graph_from_inputs(
     if params.mode == "calibrate":
         mlp = hub.Module(params.calibrator_load_tensorflow_module)
         logits = mlp(inputs, signature=params.export_mlp_module_name)
-        weights = tf.reshape(
-            features["weights"], tf.reshape(features["batch_size"], [1])
-        )
+        weights = tf.reshape(features["weights"],
+                             tf.reshape(features["batch_size"], [1]))
         # Update train_op and assign dummy_loss
         train_op = tf.assign_add(tf.train.get_global_step(), 1)
         loss = tf.constant(1)
@@ -893,17 +885,17 @@ def build_isotonic_graph_from_inputs(
             "weights": weights,
         }
     if isotonic_fn is None:
-        isotonic_spec = twml.util.create_module_spec(
-            mlp_fn=isotonic_module, mode=mode, params=params
-        )
+        isotonic_spec = twml.util.create_module_spec(mlp_fn=isotonic_module,
+                                                     mode=mode,
+                                                     params=params)
     else:
-        isotonic_spec = twml.util.create_module_spec(
-            mlp_fn=isotonic_fn, mode=mode, params=params
-        )
-    output_hub = hub.Module(
-        isotonic_spec, name=params.calibrator_export_module_name)
-    hub.register_module_for_export(
-        output_hub, params.calibrator_export_module_name)
+        isotonic_spec = twml.util.create_module_spec(mlp_fn=isotonic_fn,
+                                                     mode=mode,
+                                                     params=params)
+    output_hub = hub.Module(isotonic_spec,
+                            name=params.calibrator_export_module_name)
+    hub.register_module_for_export(output_hub,
+                                   params.calibrator_export_module_name)
     output = output_hub(inputs, signature=params.calibrator_export_module_name)
     output = tf.clip_by_value(output, 0, 1)
     loss = tf.reduce_sum(tf.stop_gradient(output))
@@ -911,9 +903,12 @@ def build_isotonic_graph_from_inputs(
     return {"train_op": train_op, "loss": loss, "output": output}
 
 
-def build_isotonic_graph(
-    features, label, mode, params, config=None, export_discretizer=True
-):
+def build_isotonic_graph(features,
+                         label,
+                         mode,
+                         params,
+                         config=None,
+                         export_discretizer=True):
     """
     Pre-set Isotonic Calibrator Build Graph
     Follows the same signature as build_graph
@@ -923,9 +918,8 @@ def build_isotonic_graph(
     """
     sparse_tf = twml.util.convert_to_sparse(features, params.input_size_bits)
     if export_discretizer:
-        return build_isotonic_graph_from_inputs(
-            sparse_tf, features, label, mode, params, config
-        )
+        return build_isotonic_graph_from_inputs(sparse_tf, features, label,
+                                                mode, params, config)
     discretizer = hub.Module(params.discretizer_path)
 
     if params.discretizer_signature is None:
@@ -933,6 +927,5 @@ def build_isotonic_graph(
     else:
         discretizer_signature = params.discretizer_signature
     input_sparse = discretizer(sparse_tf, signature=discretizer_signature)
-    return build_isotonic_graph_from_inputs(
-        input_sparse, features, label, mode, params, config
-    )
+    return build_isotonic_graph_from_inputs(input_sparse, features, label,
+                                            mode, params, config)

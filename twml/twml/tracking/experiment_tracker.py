@@ -67,25 +67,24 @@ class ExperimentTracker(object):
             logging.warning(
                 "Please stop using HParams and use python dicts. HParams are removed in TF 2"
             )
-            self._params = {k: v for k,
-                            v in params.values().items() if v != "null"}
+            self._params = {
+                k: v
+                for k, v in params.values().items() if v != "null"
+            }
         self._run_config = run_config
         self._graceful_shutdown_port = self._params.get("health_port")
 
         self.tracking_path = self._params.get("experiment_tracking_path")
-        is_tracking_path_too_long = (
-            self.tracking_path is not None and len(self.tracking_path) > 256
-        )
+        is_tracking_path_too_long = (self.tracking_path is not None
+                                     and len(self.tracking_path) > 256)
 
         if is_tracking_path_too_long:
             raise ValueError(
                 "Experiment Tracking Path longer than 256 characters")
 
-        self.disabled = (
-            self._params.get("disable_experiment_tracking", False)
-            or not self._is_env_eligible_for_tracking()
-            or ModelRepoClient is None
-        )
+        self.disabled = (self._params.get("disable_experiment_tracking", False)
+                         or not self._is_env_eligible_for_tracking()
+                         or ModelRepoClient is None)
 
         self._is_hogwild = bool(os.environ.get("TWML_HOGWILD_PORTS"))
 
@@ -94,25 +93,21 @@ class ExperimentTracker(object):
         self._client = None if self.disabled else ModelRepoClient()
 
         run_name_from_environ = self.run_name_from_environ()
-        run_name_can_be_inferred = (
-            self.tracking_path is not None or run_name_from_environ is not None
-        )
+        run_name_can_be_inferred = (self.tracking_path is not None
+                                    or run_name_from_environ is not None)
 
         # Turn the flags off as needed in hogwild / distributed
         if self._is_hogwild or self._is_distributed:
             self._env_eligible_for_recording_experiment = (
-                self._run_config.task_type == "evaluator"
-            )
+                self._run_config.task_type == "evaluator")
             if run_name_can_be_inferred:
                 self._env_eligible_for_recording_export_metadata = (
-                    self._run_config.task_type == "chief"
-                )
+                    self._run_config.task_type == "chief")
             else:
                 logging.info(
                     "experiment_tracking_path is not set and can not be inferred. "
                     "Recording export metadata is disabled because the chief node and eval node "
-                    "are setting different experiment tracking paths."
-                )
+                    "are setting different experiment tracking paths.")
                 self._env_eligible_for_recording_export_metadata = False
         else:
             # Defaults to True
@@ -142,8 +137,8 @@ class ExperimentTracker(object):
                 logging.info(
                     "No experiment_tracking_path set. Experiment Tracker will try to guess a path"
                 )
-                self.tracking_path = self.guess_path(
-                    save_dir, run_name_from_environ)
+                self.tracking_path = self.guess_path(save_dir,
+                                                     run_name_from_environ)
                 logging.info("Guessed path: %s", self.tracking_path)
 
             # additional check to see if generated path is valid
@@ -152,15 +147,11 @@ class ExperimentTracker(object):
             except ValueError as err:
                 logging.error(
                     "Could not generate valid experiment tracking path. Disabling tracking. "
-                    + "Error:\n{}".format(err)
-                )
+                    + "Error:\n{}".format(err))
                 self.disabled = True
 
-        self.project_id = (
-            None
-            if self.disabled
-            else "{}:{}".format(self.path["owner"], self.path["project_name"])
-        )
+        self.project_id = (None if self.disabled else "{}:{}".format(
+            self.path["owner"], self.path["project_name"]))
         self.base_run_id = None if self.disabled else self.tracking_path
         self._current_run_name_suffix = None
 
@@ -169,9 +160,8 @@ class ExperimentTracker(object):
         if self.disabled:
             logging.info("Experiment Tracker is disabled")
         else:
-            logging.info(
-                "Experiment Tracker initialized with base run id: %s", self.base_run_id
-            )
+            logging.info("Experiment Tracker initialized with base run id: %s",
+                         self.base_run_id)
 
     @contextmanager
     def track_experiment(self, eval_hooks, get_estimator_spec_fn, name=None):
@@ -198,8 +188,7 @@ class ExperimentTracker(object):
         # TODO: remove this once we completely deprecate the old TrackRun interface
         if eval_hooks is not None:
             self.disabled = self.disabled or any(
-                isinstance(x, MetricsUpdateHook) for x in eval_hooks
-            )
+                isinstance(x, MetricsUpdateHook) for x in eval_hooks)
 
         logging.info(
             "Is environment eligible for recording experiment: %s",
@@ -207,19 +196,15 @@ class ExperimentTracker(object):
         )
 
         if self._env_eligible_for_recording_experiment and self._graceful_shutdown_port:
-            requests.post(
-                "http://localhost:{}/track_training_start".format(
-                    self._graceful_shutdown_port
-                )
-            )
+            requests.post("http://localhost:{}/track_training_start".format(
+                self._graceful_shutdown_port))
 
         if self.disabled or eval_hooks is None:
             yield None
         else:
-            if (
-                self._current_tracker_hook is not None
-            ):
-                raise AssertionError("experiment tracking has been started already")
+            if self._current_tracker_hook is not None:
+                raise AssertionError(
+                    "experiment tracking has been started already")
 
             if name is not None:
                 self._current_run_name_suffix = "_" + name
@@ -238,13 +223,11 @@ class ExperimentTracker(object):
             try:
                 self._record_run()
                 self._add_run_status(
-                    StatusUpdate(self._current_run_id, status="RUNNING")
-                )
+                    StatusUpdate(self._current_run_id, status="RUNNING"))
                 self._register_for_graceful_shutdown()
 
                 self._current_tracker_hook = self.create_eval_hook(
-                    get_estimator_spec_fn
-                )
+                    get_estimator_spec_fn)
             except Exception as err:
                 logging.error(
                     "Failed to record run. This experiment will not be tracked. Error: %s",
@@ -260,10 +243,9 @@ class ExperimentTracker(object):
                     yield self._current_tracker_hook
                 except Exception as err:
                     self._add_run_status(
-                        StatusUpdate(
-                            self._current_run_id, status="FAILED", description=str(err)
-                        )
-                    )
+                        StatusUpdate(self._current_run_id,
+                                     status="FAILED",
+                                     description=str(err)))
                     self._deregister_for_graceful_shutdown()
                     self._current_tracker_hook = None
                     self._current_run_name_suffix = None
@@ -276,15 +258,13 @@ class ExperimentTracker(object):
                         self._record_update(
                             self._current_tracker_hook.metric_values)
                     self._add_run_status(
-                        StatusUpdate(self._current_run_id, status="SUCCESS")
-                    )
+                        StatusUpdate(self._current_run_id, status="SUCCESS"))
                     logging.info(
                         "Experiment tracking done. Experiment succeeded.")
                 except Exception as err:
                     logging.error(
-                        "Failed to update mark run as successful. Error: %s", str(
-                            err)
-                    )
+                        "Failed to update mark run as successful. Error: %s",
+                        str(err))
                 finally:
                     self._deregister_for_graceful_shutdown()
                     self._current_tracker_hook = None
@@ -316,14 +296,13 @@ class ExperimentTracker(object):
 
         try:
             logging.info(
-                "Model is exported to %s. Computing hash of the model.", export_path
-            )
+                "Model is exported to %s. Computing hash of the model.",
+                export_path)
             model_hash = self.compute_model_hash(export_path)
-            logging.info(
-                "Model hash: %s. Registering it in ML Metastore.", model_hash)
+            logging.info("Model hash: %s. Registering it in ML Metastore.",
+                         model_hash)
             self._client.register_model(
-                Model(model_hash, self.path["owner"], self.base_run_id)
-            )
+                Model(model_hash, self.path["owner"], self.base_run_id))
         except Exception as err:
             logging.error("Failed to register model. Error: %s", str(err))
 
@@ -352,48 +331,38 @@ class ExperimentTracker(object):
                     list(feature_list.keys()),
                     list(label_list.keys()),
                     list(weight_list.keys()),
-                )
-            )
+                ))
 
             feature_config_features = [
                 FeatureConfigFeature(
                     hash_id=_feature_hash_id,
                     feature_name=_feature["featureName"],
                     feature_type=_feature["featureType"],
-                )
-                for _feature_hash_id, _feature in zip(
-                    feature_list.keys(), feature_list.values()
-                )
+                ) for _feature_hash_id, _feature in zip(
+                    feature_list.keys(), feature_list.values())
             ]
-            self._client.add_feature_config_features(
-                list(feature_list.keys()), feature_config_features
-            )
+            self._client.add_feature_config_features(list(feature_list.keys()),
+                                                     feature_config_features)
 
             feature_config_labels = [
-                FeatureConfigFeature(
-                    hash_id=_label_hash_id, feature_name=_label["featureName"]
-                )
-                for _label_hash_id, _label in zip(
-                    label_list.keys(), label_list.values()
-                )
+                FeatureConfigFeature(hash_id=_label_hash_id,
+                                     feature_name=_label["featureName"])
+                for _label_hash_id, _label in zip(label_list.keys(),
+                                                  label_list.values())
             ]
-            self._client.add_feature_config_features(
-                list(label_list.keys()), feature_config_labels
-            )
+            self._client.add_feature_config_features(list(label_list.keys()),
+                                                     feature_config_labels)
 
             feature_config_weights = [
                 FeatureConfigFeature(
                     hash_id=_weight_hash_id,
                     feature_name=_weight["featureName"],
                     feature_type=_weight["featureType"],
-                )
-                for _weight_hash_id, _weight in zip(
-                    weight_list.keys(), weight_list.values()
-                )
+                ) for _weight_hash_id, _weight in zip(weight_list.keys(),
+                                                      weight_list.values())
             ]
-            self._client.add_feature_config_features(
-                list(weight_list.keys()), feature_config_weights
-            )
+            self._client.add_feature_config_features(list(weight_list.keys()),
+                                                     feature_config_weights)
 
         except Exception as err:
             logging.error("Failed to export feature spec. Error: %s", str(err))
@@ -402,7 +371,8 @@ class ExperimentTracker(object):
     def path(self):
         if self.disabled:
             return None
-        return get_components_from_id(self.tracking_path, ensure_valid_id=False)
+        return get_components_from_id(self.tracking_path,
+                                      ensure_valid_id=False)
 
     @property
     def experiment_id(self):
@@ -450,8 +420,7 @@ class ExperimentTracker(object):
 
         if not self._client.project_exists(self.project_id):
             self._client.add_project(
-                Project(self.path["project_name"], self.path["owner"])
-            )
+                Project(self.path["project_name"], self.path["owner"]))
             time.sleep(1)
 
         if not self._client.experiment_exists(self.experiment_id):
@@ -461,8 +430,7 @@ class ExperimentTracker(object):
                     self.path["owner"],
                     self.project_id,
                     "",
-                )
-            )
+                ))
             time.sleep(1)
 
         run = DeepbirdRun(
@@ -490,13 +458,12 @@ class ExperimentTracker(object):
         reported_metrics = {}
         for k, v in metrics.items():
             if hasattr(v, "item"):
-                reported_metrics[k] = v.item(
-                ) if v.size == 1 else str(v.tolist())
+                reported_metrics[k] = v.item() if v.size == 1 else str(
+                    v.tolist())
             else:
                 logging.warning(
-                    "Ignoring %s because the value (%s) is not valid" % (
-                        k, str(v))
-                )
+                    "Ignoring %s because the value (%s) is not valid" %
+                    (k, str(v)))
 
         report = ProgressReport(self._current_run_id, reported_metrics)
 
@@ -505,8 +472,7 @@ class ExperimentTracker(object):
         except Exception as err:
             logging.error(
                 "Failed to record metrics in ML Metastore. Error: {}".format(
-                    err)
-            )
+                    err))
             logging.error("Run ID: {}".format(self._current_run_id))
             logging.error("Progress Report: {}".format(
                 report.to_json_string()))
@@ -518,16 +484,10 @@ class ExperimentTracker(object):
         Returns:
           (Response) health server response
         """
-        if (
-            self._graceful_shutdown_port
-            and not self.disabled
-            and self._env_eligible_for_recording_experiment
-        ):
-            return requests.post(
-                "http://localhost:{}/register_id/{}".format(
-                    self._graceful_shutdown_port, self._current_run_id
-                )
-            )
+        if (self._graceful_shutdown_port and not self.disabled
+                and self._env_eligible_for_recording_experiment):
+            return requests.post("http://localhost:{}/register_id/{}".format(
+                self._graceful_shutdown_port, self._current_run_id))
 
     def _deregister_for_graceful_shutdown(self):
         """
@@ -536,28 +496,18 @@ class ExperimentTracker(object):
         Returns:
           (Response) health server response
         """
-        if (
-            self._graceful_shutdown_port
-            and not self.disabled
-            and self._env_eligible_for_recording_experiment
-        ):
-            return requests.post(
-                "http://localhost:{}/deregister_id/{}".format(
-                    self._graceful_shutdown_port, self._current_run_id
-                )
-            )
+        if (self._graceful_shutdown_port and not self.disabled
+                and self._env_eligible_for_recording_experiment):
+            return requests.post("http://localhost:{}/deregister_id/{}".format(
+                self._graceful_shutdown_port, self._current_run_id))
 
     def _is_env_eligible_for_tracking(self):
         """Determine if experiment tracking should run in the env."""
-        is_unit_test = (
-            os.environ.get("PYTEST_CURRENT_TEST") is not None
-            and os.environ.get("TEST_EXP_TRACKER") is None
-        )
+        is_unit_test = (os.environ.get("PYTEST_CURRENT_TEST") is not None
+                        and os.environ.get("TEST_EXP_TRACKER") is None)
 
-        is_running_on_ci = (
-            getpass.getuser() == "scoot-service"
-            and os.environ.get("TEST_EXP_TRACKER") is None
-        )
+        is_running_on_ci = (getpass.getuser() == "scoot-service"
+                            and os.environ.get("TEST_EXP_TRACKER") is None)
 
         return not is_unit_test and not is_running_on_ci
 
@@ -574,20 +524,15 @@ class ExperimentTracker(object):
             # job_launch_time should be in isoformat
             # python2 doesnt support datetime.fromisoformat, so use hardcoded format string.
             job_launch_time_formatted = datetime.strptime(
-                job_launch_time, "%Y-%m-%dT%H:%M:%S.%f"
-            )
+                job_launch_time, "%Y-%m-%dT%H:%M:%S.%f")
         except ValueError:
             # Fallback in case aurora config is generating datetime in a different format.
-            job_launch_time_formatted = (
-                job_launch_time.replace("-", "_")
-                .replace("T", "_")
-                .replace(":", "_")
-                .replace(".", "_")
-            )
+            job_launch_time_formatted = (job_launch_time.replace(
+                "-", "_").replace("T", "_").replace(":",
+                                                    "_").replace(".", "_"))
 
         return "{}_{}".format(
-            job_name, job_launch_time_formatted.strftime("%m_%d_%Y_%I_%M_%p")
-        )
+            job_name, job_launch_time_formatted.strftime("%m_%d_%Y_%I_%M_%p"))
 
     @classmethod
     def guess_path(cls, save_dir, run_name=None):
@@ -602,8 +547,8 @@ class ExperimentTracker(object):
                 datetime.now().strftime("%m_%d_%Y_%I_%M_%p"))
 
         if save_dir.startswith("hdfs://"):
-            path_match = re.search(
-                r"/user/([a-z0-9\-_]+)/([a-z0-9\-_]+)", save_dir)
+            path_match = re.search(r"/user/([a-z0-9\-_]+)/([a-z0-9\-_]+)",
+                                   save_dir)
 
             if path_match:
                 groups = path_match.groups()

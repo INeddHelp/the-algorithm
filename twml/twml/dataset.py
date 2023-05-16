@@ -12,7 +12,10 @@ from twml.constants import DEFAULT_ZOOKEEPER_BASE_ZNODE, DEFAULT_ZOOKEEPER_HOST
 class BlockFormatDataset(tf.data.Dataset):
     """A ``tf.data.Dataset`` comprising records from one or more TFRecord files."""
 
-    def __init__(self, filenames, compression_type="auto", buffer_size=1 << 20):
+    def __init__(self,
+                 filenames,
+                 compression_type="auto",
+                 buffer_size=1 << 20):
         """
         Creates a ``BlockFormatDataset``.
 
@@ -26,15 +29,14 @@ class BlockFormatDataset(tf.data.Dataset):
           buffer_size:
             Buffer size to be used during decompression. default: 1<<20.
         """
-        self._filenames = tf.convert_to_tensor(
-            filenames, dtype=tf.string, name="filenames"
-        )
-        self._compression_type = tf.convert_to_tensor(
-            compression_type.lower(), name="compression_type"
-        )
-        self._buffer_size = tf.convert_to_tensor(
-            buffer_size, dtype=tf.int64, name="buffer_size"
-        )
+        self._filenames = tf.convert_to_tensor(filenames,
+                                               dtype=tf.string,
+                                               name="filenames")
+        self._compression_type = tf.convert_to_tensor(compression_type.lower(),
+                                                      name="compression_type")
+        self._buffer_size = tf.convert_to_tensor(buffer_size,
+                                                 dtype=tf.int64,
+                                                 name="buffer_size")
         # Parent class calss self._as_variant_tensor in init. So call this at the end.
         super(BlockFormatDataset, self).__init__()
 
@@ -42,14 +44,13 @@ class BlockFormatDataset(tf.data.Dataset):
         """Create the resource handle for the dataset."""
         try:
             block_format_dataset = __import__(
-                "libtwml_internal"
-            ).OPLIB.block_format_dataset
+                "libtwml_internal").OPLIB.block_format_dataset
             return block_format_dataset(self._filenames)
         except ImportError:
             block_format_dataset = OPLIB.block_format_dataset_v2
-            return block_format_dataset(
-                self._filenames, self._compression_type, self._buffer_size
-            )
+            return block_format_dataset(self._filenames,
+                                        self._compression_type,
+                                        self._buffer_size)
 
     def _inputs(self):
         return []
@@ -78,7 +79,8 @@ def downsample_dataset(dataset, sample_rate, rate_name):
         raise TypeError("dataset %s must be a real number" % rate_name)
     elif sample_rate <= 0 or sample_rate > 1:
         raise ValueError("dataset %s must be in range (0, 1])" % rate_name)
-    return dataset.filter(lambda _: tf.squeeze(tf.random_uniform([1])) < sample_rate)
+    return dataset.filter(
+        lambda _: tf.squeeze(tf.random_uniform([1])) < sample_rate)
 
 
 def _filenames_dataset(files, shards=None, shard_index=None):
@@ -89,10 +91,8 @@ def _filenames_dataset(files, shards=None, shard_index=None):
     files = tf.data.Dataset.from_tensor_slices(files)
 
     if [shards, shard_index] != [None, None]:
-        logging.info(
-            "Sharding files dataset (index: %d, shards: %d)" % (
-                shard_index, shards)
-        )
+        logging.info("Sharding files dataset (index: %d, shards: %d)" %
+                     (shard_index, shards))
         files = files.shard(num_shards=shards, index=shard_index)
 
     return files
@@ -206,10 +206,8 @@ def stream_block_format_dataset(
     files = _filenames_dataset(files, shards=shards, shard_index=shard_index)
 
     file_shuffle_size = file_shuffle_size if file_shuffle_size is not None else 100000
-    record_shuffle_size = (
-        record_shuffle_size if record_shuffle_size is not None else (
-            batch_size * 8)
-    )
+    record_shuffle_size = (record_shuffle_size if record_shuffle_size
+                           is not None else (batch_size * 8))
     block_length = block_length if block_length is not None else batch_size
 
     logging.info("NUM_THREADS: %d", num_threads)
@@ -222,9 +220,8 @@ def stream_block_format_dataset(
         files = files.shuffle(buffer_size=file_shuffle_size)
 
     # Downsample parts files
-    files = downsample_dataset(
-        files, parts_downsampling_rate, "parts_downsampling_rate"
-    )
+    files = downsample_dataset(files, parts_downsampling_rate,
+                               "parts_downsampling_rate")
 
     # Interleave the result from BlockFormatDataset
     # block_length == batch_size results in batch_size records being read from a single file.
@@ -243,9 +240,8 @@ def stream_block_format_dataset(
         return dataset
 
     if interleave:
-        part_file_parallelism = (
-            num_threads if part_file_parallelism is None else part_file_parallelism
-        )
+        part_file_parallelism = (num_threads if part_file_parallelism is None
+                                 else part_file_parallelism)
         dataset = files.interleave(
             map_fn,
             cycle_length=part_file_parallelism,
@@ -260,11 +256,10 @@ def stream_block_format_dataset(
 
     if dataset_fn is None:
         # Create a batch of datarecords and decode them
-        return (
-            dataset.batch(batch_size)
-            .map(parse_fn, num_parallel_calls=tf.data.experimental.AUTOTUNE)
-            .prefetch(prefetch_size)
-        )
+        return (dataset.batch(batch_size).map(
+            parse_fn,
+            num_parallel_calls=tf.data.experimental.AUTOTUNE).prefetch(
+                prefetch_size))
 
     return dataset_fn(dataset, parse_fn, batch_size)
 
@@ -365,9 +360,8 @@ def zookeeper_ordered_dataset(
         Default False. Set True to log the names of files loaded by TF.
     """
     block_length = batch_size if block_length is None else block_length
-    part_file_parallelism = (
-        num_threads if part_file_parallelism is None else part_file_parallelism
-    )
+    part_file_parallelism = (num_threads if part_file_parallelism is None else
+                             part_file_parallelism)
 
     def zk_index_generator(my_files=files):
         zk = KazooClient(hosts=DEFAULT_ZOOKEEPER_HOST)
@@ -383,10 +377,8 @@ def zookeeper_ordered_dataset(
             else:
                 chosen_file = my_files[counter_pre_value]
                 if verbose:
-                    logging.info(
-                        "{}. yielding {}".format(
-                            counter_pre_value, chosen_file)
-                    )
+                    logging.info("{}. yielding {}".format(
+                        counter_pre_value, chosen_file))
                 yield chosen_file
         zk.stop()
 
@@ -415,9 +407,8 @@ def zookeeper_ordered_dataset(
     if dataset_fn is None:
         # Create a batch of datarecords and decode them
         dataset = dataset.batch(batch_size)
-        dataset = dataset.map(
-            parse_fn, num_parallel_calls=tf.data.experimental.AUTOTUNE
-        )
+        dataset = dataset.map(parse_fn,
+                              num_parallel_calls=tf.data.experimental.AUTOTUNE)
         # shuffle after batching and parsing for performance reasons
         # faster b/c 1 random selection is made per batch rather than per record
         if batch_shuffle_size:
