@@ -5,7 +5,6 @@ import twml
 
 
 class FeatureConfig(feature_config.FeatureConfig):
-
     def get_feature_spec(self):
         """Generates a serialization-friendly dict representing this FeatureConfig."""
         doc = super(FeatureConfig, self).get_feature_spec()
@@ -33,16 +32,19 @@ class FeatureConfigBuilder(feature_config.FeatureConfigBuilder):
         for config in self._sparse_extraction_configs:
             if config.discretize_num_bins and config.discretize_output_size_bits:
                 if config.discretize_type == "percentile":
-                    calibrator = (twml.contrib.calibrators.
-                                  PercentileDiscretizerCalibrator)
+                    calibrator = (
+                        twml.contrib.calibrators.PercentileDiscretizerCalibrator
+                    )
                 elif config.discretize_type == "hashed_percentile":
-                    calibrator = (twml.contrib.calibrators.
-                                  HashedPercentileDiscretizerCalibrator)
+                    calibrator = (
+                        twml.contrib.calibrators.HashedPercentileDiscretizerCalibrator
+                    )
                 elif config.discretize_type == "hashing":
                     calibrator = twml.contrib.calibrators.HashingDiscretizerCalibrator
                 else:
-                    raise ValueError("Unsupported discretizer type: " +
-                                     config.discretize_type)
+                    raise ValueError(
+                        "Unsupported discretizer type: " + config.discretize_type
+                    )
                 discretize_dict[config.output_name] = calibrator(
                     config.discretize_num_bins,
                     config.discretize_output_size_bits,
@@ -63,8 +65,7 @@ class FeatureConfigBuilder(feature_config.FeatureConfigBuilder):
             feature_types=feature_map,
             sparse_extraction_configs=self._sparse_extraction_configs,
             feature_extraction_configs=self._feature_extraction_configs,
-            feature_group_extraction_configs=self.
-            _feature_group_extraction_configs,
+            feature_group_extraction_configs=self._feature_group_extraction_configs,
             image_configs=self._image_configs,
             discretize_config=discretize_dict,
             feature_ids=features_add,
