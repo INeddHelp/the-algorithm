@@ -79,9 +79,7 @@ public final class EarlybirdThriftDocumentBuilder extends ThriftDocumentBuilder 
       ImmutableSet.of(
           NamedEntityInputSourceType.URL_TITLE, NamedEntityInputSourceType.URL_DESCRIPTION);
 
-  private final TokenStreamSerializer intTermAttributeSerializer =
-      new TokenStreamSerializer(ImmutableList.of(
-          new IntTermAttributeSerializer()));
+  
   private final TokenStreamSerializer photoUrlSerializer =
       new TokenStreamSerializer(ImmutableList
           .<TokenStreamSerializer.AttributeSerializer>of(

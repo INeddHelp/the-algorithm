@@ -18,7 +18,7 @@ import com.twitter.util.Try;
  * Responsible for handling requests in superroot.
  */
 public abstract class RequestRouter {
-  private static final Logger LOG = LoggerFactory.getLogger(RequestRouter.class);
+  
 
   /**
    * Saved request and response, to be included in debug info.

@@ -88,8 +88,7 @@ public class UpdateableEarlybirdStateManager extends OneTaskScheduledExecutorMan
   private static final String NOT_IN_LAYOUT_SHUT_DOWN_ATTEMPTED_NAME =
       "not_in_layout_shut_down_attempted";
 
-  private static final String SHUT_DOWN_EARLYBIRD_WHEN_NOT_IN_LAYOUT_DECIDER_KEY =
-      "shut_down_earlybird_when_not_in_layout";
+  
 
   private static final String NO_SHUTDOWN_WHEN_NOT_IN_LAYOUT_NAME =
       "no_shutdown_when_not_in_layout";

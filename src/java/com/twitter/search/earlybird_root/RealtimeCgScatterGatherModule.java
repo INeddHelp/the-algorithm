@@ -23,8 +23,7 @@ import com.twitter.search.earlybird_root.common.EarlybirdRequestContext;
 import com.twitter.search.earlybird_root.filters.RequestContextToEarlybirdRequestFilter;
 
 public class RealtimeCgScatterGatherModule extends ScatterGatherModule {
-  private static final Logger LOG =
-      LoggerFactory.getLogger(RealtimeCgScatterGatherModule.class);
+  
 
   /**
    * Provides a scatter gather service for the realtime_cg cluster.

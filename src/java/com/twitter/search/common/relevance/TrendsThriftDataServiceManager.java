@@ -64,10 +64,8 @@ public final class TrendsThriftDataServiceManager {
   // a list of trends cache we want to update
   private final List<NGramCache> trendsCacheList;
 
-  private final SearchCounter getAvailableSuccessCounter =
-      RelevanceStats.exportLong("trends_extractor_get_available_success");
-  private final SearchCounter getAvailableFailureCounter =
-      RelevanceStats.exportLong("trends_extractor_get_available_failure");
+  
+  
   private final SearchCounter getTrendsSuccessCounter =
       RelevanceStats.exportLong("trends_extractor_success_fetch");
   private final SearchCounter getTrendsFailureCounter =

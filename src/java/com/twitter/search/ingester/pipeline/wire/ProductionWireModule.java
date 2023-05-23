@@ -81,22 +81,16 @@ public class ProductionWireModule extends WireModule {
   private static final String JNDI_GIZMODUCK_DEST = JNDI_PIPELINE_ROOT + "gizmoduckDest";
 
   private static final String PENGUIN_VERSIONS_JNDI_NAME = JNDI_PIPELINE_ROOT + "penguinVersions";
-  private static final String SEGMENT_BUFFER_SIZE_JNDI_NAME =
-      JNDI_PIPELINE_ROOT + "segmentBufferSize";
-  private static final String SEGMENT_SEAL_DELAY_TIME_MS_JNDI_NAME =
-      JNDI_PIPELINE_ROOT + "segmentSealDelayTimeMs";
-  private static final String JNDI_DL_URI = JNDI_PIPELINE_ROOT + "distributedlog/dlUri";
-  private static final String JNDI_DL_CONFIG_FILE =
-      JNDI_PIPELINE_ROOT + "distributedlog/configFile";
+  
+  
+  
+  
   private static final String CLUSTER_JNDI_NAME = JNDI_PIPELINE_ROOT + "cluster";
 
   private static final String TIME_SLICE_MANAGER_ROOT_PATH = "";
-  private static final String MAX_TIMESLICES_JNDI_NAME =
-      TIME_SLICE_MANAGER_ROOT_PATH + "hashPartition/maxTimeSlices";
-  private static final String MAX_SEGMENT_SIZE_JNDI_NAME =
-      TIME_SLICE_MANAGER_ROOT_PATH + "hashPartition/maxSegmentSize";
-  private static final String NUM_PARTITIONS_JNDI_NAME =
-      TIME_SLICE_MANAGER_ROOT_PATH + "hashPartition/numPartitions";
+  
+  
+  
 
   private static final String PINK_CLIENT_ID = "search_ingester";
 

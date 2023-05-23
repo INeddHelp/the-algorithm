@@ -29,7 +29,7 @@ import com.twitter.search.queryparser.query.annotation.FieldAnnotationUtils;
 import com.twitter.search.queryparser.query.annotation.FieldNameWithBoost;
 
 public final class FieldWeightUtil {
-  private static final Logger LOG = LoggerFactory.getLogger(FieldWeightUtil.class);
+  
   private FieldWeightUtil() {
   }
 

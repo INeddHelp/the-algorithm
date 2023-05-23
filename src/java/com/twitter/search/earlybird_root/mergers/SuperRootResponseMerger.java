@@ -44,7 +44,7 @@ import com.twitter.util.Future;
 
 /** Utility functions for merging recency and relevance results. */
 public class SuperRootResponseMerger {
-  private static final Logger LOG = LoggerFactory.getLogger(SuperRootResponseMerger.class);
+  
   private static final String ALL_STATS_PREFIX = "superroot_response_merger_";
 
   private static final SearchCounter FULL_ARCHIVE_MIN_ID_GREATER_THAN_REALTIME_MIN_ID =

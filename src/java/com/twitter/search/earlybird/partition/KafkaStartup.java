@@ -50,7 +50,7 @@ public class KafkaStartup implements EarlybirdStartup {
   private static final String INGEST_UNTIL_CURRENT = "ingest until current";
   private static final String LOAD_FLUSHED_INDEX = "load flushed index";
   private static final String SETUP_QUERY_CACHE = "setting up query cache";
-  private static final String USER_UPDATES_STARTUP = "user updates startup";
+  
   private static final String AUDIO_SPACES_STARTUP = "audio spaces startup";
   private static final String BUILD_MULTI_SEGMENT_TERM_DICTIONARY =
           "build multi segment term dictionary";
