@@ -70,7 +70,6 @@ def load_initializers_from_csv(
       A tuple containing of (vocab_size, embedding_size).
 
   """
-
   start = time.time()
 
   embedding_path = twml.util.sanitize_hdfs_path(embedding_path)
@@ -182,7 +181,6 @@ def add_parser_arguments(parser):
   Returns:
     argparse.ArgumentParser instance with discretizer-specific arguments added
   """
-
   parser.add_argument(
     "--embedding.path",
     "--embedding_path",

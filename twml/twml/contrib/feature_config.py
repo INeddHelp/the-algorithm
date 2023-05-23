@@ -20,7 +20,6 @@ class FeatureConfigBuilder(feature_config.FeatureConfigBuilder):
     # Overwrite self.build() to return twml.FeatureConfig instead
     def build(self):
         """Returns an instance of FeatureConfig with the features passed to the FeatureConfigBuilder."""
-
         (
             keep_tensors,
             keep_sparse_tensors,

@@ -102,7 +102,6 @@ def ndcg(
 # https://github.com/tensorflow/tensorflow/blob/v1.5.0/tensorflow/python/ops/metrics_impl.py#L39
 def _metric_variable(shape, dtype, validate_shape=True, name=None):
     """Create variable in `GraphKeys.(LOCAL|METRIC_VARIABLES`) collections."""
-
     return tf.Variable(
         lambda: tf.zeros(shape, dtype),
         trainable=False,
@@ -240,7 +239,6 @@ def get_search_metric_fn(
         weights:
           weights of the samples..
         """
-
         eval_metric_ops = OrderedDict()
 
         preds = graph_output["output"]

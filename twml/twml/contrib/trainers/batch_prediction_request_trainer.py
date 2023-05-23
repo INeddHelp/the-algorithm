@@ -48,7 +48,6 @@ class BatchPredictionRequestTrainer(DataRecordTrainer):  # pylint: disable=abstr
       **kwargs:
         further kwargs can be specified and passed to the Estimator constructor.
     """
-
     # Check and update train_batch_size and eval_batch_size in params before initialization
     # to print correct parameter logs and does not stop running
     # This overwrites batch_size parameter constrains in twml.trainers.Trainer.check_params

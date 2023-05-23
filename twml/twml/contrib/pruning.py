@@ -53,7 +53,6 @@ def apply_mask(tensor, name="pruning"):
     Returns:
       `tf.Tensor` with same shape as `tensor`
     """
-
     tensor_shape = tensor.shape
 
     with tf.variable_scope(name, reuse=True):
@@ -102,7 +101,6 @@ def extend_mask(mask, tensor):
     Returns:
       The extended mask
     """
-
     batch_size = tf.shape(tensor)[:1]
     ones = tf.ones([tf.rank(tensor) - 1], dtype=batch_size.dtype)
     multiples = tf.concat([batch_size, ones], 0)
@@ -121,7 +119,6 @@ def find_input_mask(tensor):
     Returns:
       A `tf.Tensor` or `None`
     """
-
     if hasattr(tensor, "_mask"):
         return tensor._mask
     if tensor.op.type in ["MatMul", "Conv1D", "Conv2D", "Conv3D", "Transpose"]:
@@ -146,7 +143,6 @@ def find_output_mask(tensor):
     Returns:
       A `tf.Tensor` or `None`
     """
-
     if isinstance(tensor, tf.Variable):
         return find_output_mask(tensor.op.outputs[0])
     if hasattr(tensor, "_mask"):
@@ -175,7 +171,6 @@ def find_mask(tensor):
     Returns:
       A `tf.Tensor` with binary entries indicating disabled channels
     """
-
     input_mask = find_input_mask(tensor)
     output_mask = find_output_mask(tensor)
     if input_mask is None:
@@ -201,7 +196,6 @@ def pruned_shape(tensor):
     Returns:
       A `tf.Tensor[tf.float32]` representing the pruned shape
     """
-
     mask = find_mask(tensor)
 
     if mask is None:
@@ -232,7 +226,6 @@ def computational_cost(op_or_tensor, _observed=None):
     Returns:
       A `tf.Tensor` representing a number of floating point operations
     """
-
     cost = tf.constant(0.0)
 
     # exclude cost of computing extended pruning masks
@@ -307,7 +300,6 @@ def update_pruning_signals(loss, decay=0.96, masks=None, method="Fisher"):
     References:
       * Theis et al., Faster gaze prediction with dense networks and Fisher pruning, 2018
     """
-
     if masks is None:
         masks = tf.get_collection(MASK_COLLECTION)
 
@@ -349,7 +341,6 @@ def prune(signals, masks=None):
     Returns:
       A `tf.Operation` which updates masks
     """
-
     if masks is None:
         masks = tf.get_collection(MASK_COLLECTION)
 

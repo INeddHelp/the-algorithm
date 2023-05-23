@@ -78,7 +78,6 @@ class SparseMaxNorm(Layer):
 
   def build(self, input_shape):  # pylint: disable=unused-argument
     """Creates the max_x and bias_x tf.Variables of the layer."""
-
     self.max_x = self.add_variable(
       'max_x',
       initializer=self.max_x_initializer,
@@ -119,7 +118,6 @@ class SparseMaxNorm(Layer):
        A ``tf.SparseTensor`` representing the output of the max_norm transformation, this can
        be fed into twml.layers.FullSparse in order to be transformed into a ``tf.Tensor``.
     """
-
     if isinstance(inputs, twml.SparseTensor):
       inputs = inputs.to_tf()
     elif not isinstance(inputs, tf.SparseTensor):

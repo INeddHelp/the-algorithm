@@ -108,7 +108,6 @@ def get_calibrate_input_fn(parse_fn, params):
     Returns:
       input_fn
     """
-
     return lambda: data_record_input_fn(
         files=_generate_files_by_datetime(params),
         batch_size=params.calibrator_batch_size,
@@ -136,7 +135,6 @@ def get_discretize_input_fn(parse_fn, params):
     Returns:
       input_fn
     """
-
     return lambda: data_record_input_fn(
         files=_generate_files_by_datetime(params),
         batch_size=params.discretizer_batch_size,
@@ -161,7 +159,6 @@ def discretizer_arguments(parser=None):
       parser:
         Parser with the options to the model. Defaults to None
     """
-
     if parser is None:
         parser = twml.DefaultSubcommandArgParse(
             formatter_class=SortingHelpFormatter)
@@ -292,7 +289,6 @@ def calibrate(trainer, params, build_graph, input_fn, debug=False):
       debug:
         Defaults to False. Returns the calibrator
     """
-
     if trainer._estimator.config.is_chief:
         # overwrite the current save_dir
         if params.overwrite_save_dir and tf.io.gfile.exists(
@@ -365,7 +361,6 @@ def discretize(params, feature_config, input_fn, debug=False):
       debug:
         Defaults to False. Returns the calibrator
     """
-
     if (os.environ.get("TWML_HOGWILD_TASK_TYPE") == "chief"
             or "num_workers" not in params or params.num_workers is None):
         # overwrite the current save_dir
@@ -441,7 +436,6 @@ def add_discretizer_arguments(parser):
     Returns:
       argparse.ArgumentParser instance with discretizer-specific arguments added
     """
-
     parser.add_argument(
         "--discretizer.save_dir",
         type=str,
@@ -596,7 +590,6 @@ def calibrate_calibrator_and_export(
         the task type for exporting the calibrator
         if specified, this will override the default export task type in trainer.hub_export(..)
     """
-
     # create calibrator params
     params_c = copy.deepcopy(params)
     params_c.data_threads = 1
@@ -733,7 +726,6 @@ def calibrate_discretizer_and_export(name, calibrator, build_graph_fn, params,
       feature_config:
         feature config or input_fn which will be passed to the trainer.
     """
-
     if (os.environ.get("TWML_HOGWILD_TASK_TYPE") == "chief"
             or "num_workers" not in params or params.num_workers is None):
         # chief trains discretizer

@@ -409,7 +409,6 @@ def compute_feature_importances(trainer,
       datarecord_filter_fn (function): a function takes a single data sample in com.twitter.ml.api.ttypes.DataRecord format
           and return a boolean value, to indicate if this data record should be kept in feature importance module or not.
     """
-
     # We only use the trainer's eval files if an override data_dir is not provided
     if data_dir is None:
         logging.info("Using trainer._eval_files (found {} as files)".format(

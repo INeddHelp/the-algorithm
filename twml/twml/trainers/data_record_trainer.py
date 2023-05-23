@@ -109,7 +109,6 @@ class DataRecordTrainer(Trainer):  # pylint: disable=abstract-method
       **kwargs:
         further kwargs can be specified and passed to the Estimator constructor.
     """
-
     # NOTE: DO NOT MODIFY `params` BEFORE THIS CALL.
     super(DataRecordTrainer, self).__init__(
       name=name, params=params, build_graph_fn=build_graph_fn, **kwargs)

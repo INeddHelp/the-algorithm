@@ -20,7 +20,6 @@ def linear_interp1(inputs, ref_inputs, ref_outputs):
     Returns:
       The interpolated outputs for the requested input values.
     """
-
     inputs = tf.convert_to_tensor(inputs)
     ref_inputs = tf.convert_to_tensor(ref_inputs)
     ref_outputs = tf.convert_to_tensor(ref_outputs)
@@ -73,7 +72,6 @@ def linear_interp1_by_class(inputs, input_classes, ref_inputs, ref_outputs):
     Returns:
       The interpolated outputs for the requested input values.
     """
-
     inputs = tf.convert_to_tensor(inputs)
     input_classes = tf.convert_to_tensor(input_classes)
     ref_inputs = tf.convert_to_tensor(ref_inputs)

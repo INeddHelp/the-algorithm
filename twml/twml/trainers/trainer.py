@@ -276,7 +276,6 @@ class Trainer(object):
             ``train``, ``learn``, or ``predict`` methods. The hook can be added manually by passing
             ``trainer.train(..., hooks=myhooks.extend(trainer.get_train_hooks()))``, for example.
         """
-
         if tensorflow.__version__ >= "2.0":
             RuntimeError("Trainer not yet supported for Tensorflow >= 2.0")
 
@@ -1395,7 +1394,6 @@ class Trainer(object):
         Returns:
           The directory where the checkpoints were saved.
         """
-
         logging.info(
             "WARNING: Trainer.train_and_evaluate is an EXPERIMENTAL API.")
         logging.info(
@@ -1688,7 +1686,6 @@ class Trainer(object):
           save_calibrator:
             Boolean (default: True). If set to True it will save the calibrator layer.
         """
-
         if not callable(input_fn):
             raise ValueError("Expecting callable input_fn function")
 

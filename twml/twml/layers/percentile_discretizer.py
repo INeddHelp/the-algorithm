@@ -93,7 +93,6 @@ class PercentileDiscretizer(Layer):
             a 1D Tensor specifying the starting location of bins for a given feature id.
             For example, tf.Tensor(np.arange(0, bin_values.size, n_bin, dtype='int64')).
         """
-
         super(PercentileDiscretizer, self).__init__(**kwargs)
 
         if not self.built:
@@ -146,7 +145,6 @@ class PercentileDiscretizer(Layer):
           A `SparseTensor` of the same type as `inputs`.
           Its dense_shape is [shape_input.dense_shape[0], 1 << output_bits].
         """
-
         if isinstance(inputs, tf.SparseTensor):
             inputs = twml.SparseTensor.from_tf(inputs)
 

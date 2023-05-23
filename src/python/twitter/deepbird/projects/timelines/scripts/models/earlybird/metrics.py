@@ -29,7 +29,6 @@ def get_multi_binary_class_metric_fn(metrics, classes=None, class_dim=1):
     weights:
       weights of the samples..
     """
-
     # Added to support the example weights overriding.
     weights = graph_output["weights"]
     # Added to support per engagement metrics for both TF and Lolly scores.

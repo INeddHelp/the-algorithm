@@ -24,7 +24,6 @@ class FeatureConfigBuilder(feature_config.FeatureConfigBuilder):
     def build(self):
         # Overwrite self.build() to return twml.FeatureConfig instead
         """Builds and returns FeatureConfig object."""
-
         (
             features,
             tensor_types,

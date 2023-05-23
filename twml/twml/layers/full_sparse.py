@@ -137,7 +137,6 @@ class FullSparse(Layer):
     creates the ``bias`` and ``weight`` Variables
     of shape ``[output_size]`` and ``[input_size, output_size]`` respectively.
     """
-
     if isinstance(input_shapes, (list, tuple)):
       input_shape = input_shapes[0]
       is_compatible = True

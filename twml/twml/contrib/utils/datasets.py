@@ -38,7 +38,6 @@ def resolve_train_and_eval_files_overlap(
   Returns:
     A tuple `(new_train_files, new_eval_files)` with the overlapping resolved.
   """
-
   rng = random.Random(seed)
 
   train_files = set(train_files)
@@ -69,7 +68,6 @@ def get_time_based_dataset_files_for_train_and_eval(
   This is just a convenience built around `get_dataset_files_prefixed_by_time` and
   `resolve_train_and_eval_files_overlap`. Please refer to these functions for documentation.
   """
-
   train_files = get_time_based_dataset_files(
     base_path=base_path,
     start_datetime=train_start_datetime,

@@ -86,7 +86,6 @@ class ZscoreNormalization(Layer):
             be fully defined (e.g. the batch size may be unknown).
 
         """
-
         return input_shape
 
     def _training_pass(self, input, dense_mask, input_dtype, handle_single,
@@ -204,7 +203,6 @@ class ZscoreNormalization(Layer):
           But if one-hot feature is included,
           they will all have same values 1, in that case, make sure to set handle_single to true.
         """
-
         if dense_mask is None:
             dense_mask = tf.math.logical_not(tf.equal(input, 0))
         input_dtype = input.dtype
@@ -250,7 +248,6 @@ def zscore_normalization(input,
       But if one-hot feature is included,
       they will all have same values 1, in that case, make sure to set handle_single to true.
     """
-
     norm_layer = ZscoreNormalization(decay=decay,
                                      data_type=data_type,
                                      name=name,

@@ -78,7 +78,6 @@ class FactorizationMachine(Layer):
 
     def build(self, input_shape):
         """creates``weight`` Variable of shape``[input_size, num_latent_variables]``."""
-
         shape = [input_shape[1], self.num_latent_variables]
 
         # There is a 2GB limitation for each tensor because of protobuf.

@@ -127,7 +127,6 @@ class MDL(Layer):  # noqa: T000
     Creates the variables of the layer:
     hash_keys, hash_values, bin_ids, bin_values, feature_offsets and self.output_size.
     """
-
     # build layers
     self.partition = Partition()
     self.stitch = Stitch()

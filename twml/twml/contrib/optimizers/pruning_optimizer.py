@@ -117,7 +117,6 @@ class PruningOptimizer(tf.train.MomentumOptimizer):
     References:
     * Theis et al., Faster gaze prediction with dense networks and Fisher pruning, 2018
     """
-
     # gradient-based updates of parameters
     if update_params is None:
       update_params = super(PruningOptimizer, self).minimize(loss, *args, **kwargs)
