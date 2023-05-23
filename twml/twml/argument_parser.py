@@ -40,7 +40,8 @@ def _set_log_level(level=None):
         )
     tf.logging.set_verbosity(LOG_LEVELS[level])
     tf.logging.info(
-        f"Setting tensorflow logging level to {level} or {LOG_LEVELS[level]}")
+        f"Setting tensorflow logging level to {level} or {LOG_LEVELS[level]}"
+    )
     return level
 
 
@@ -677,9 +678,8 @@ def get_trainer_parser():
     Minimum learning rate value as a fraction of learning_rate.",
     )
     parser_cosine.add_argument(
-        "--decay_steps",
-        type=float,
-        help="Required for 'inverse' learning_rate_decay.")
+        "--decay_steps", type=float, help="Required for 'inverse' learning_rate_decay."
+    )
 
     # Create the parser for the "cosine_restart_learning_rate_decay_fn"
     parser_cosine_restart = subparsers.add_parser(
@@ -720,7 +720,8 @@ def get_trainer_parser():
 
     # Create dummy parser for None, which is the default.
     parser_default = subparsers.add_parser(
-        "no_learning_rate_decay", help="No learning rate decay")  # noqa: F841
+        "no_learning_rate_decay", help="No learning rate decay"
+    )  # noqa: F841
 
     parser.set_default_subparser("no_learning_rate_decay")
 
@@ -743,17 +744,17 @@ class DefaultSubcommandArgParse(argparse.ArgumentParser):
         if d_sp is not None and not {"-h", "--help"}.intersection(in_args):
             for x_val in self._subparsers._actions:
                 subparser_found = isinstance(
-                    x_val,
-                    argparse._SubParsersAction) and in_args.intersection(
-                        x_val._name_parser_map.keys())
+                    x_val, argparse._SubParsersAction
+                ) and in_args.intersection(x_val._name_parser_map.keys())
                 if subparser_found:
                     break
             else:
                 # insert default in first position, this implies no
                 # global options without a sub_parsers specified
                 arg_strings = arg_strings + [d_sp]
-        return super(DefaultSubcommandArgParse,
-                     self)._parse_known_args(arg_strings, *args, **kwargs)
+        return super(DefaultSubcommandArgParse, self)._parse_known_args(
+            arg_strings, *args, **kwargs
+        )
 
     def _check_value(self, action, value):
         try:
@@ -763,8 +764,8 @@ class DefaultSubcommandArgParse(argparse.ArgumentParser):
                 '\nERROR: Deepbird is trying to interpret "{}" as a value of {}. If this is not what you expected, '
                 "then most likely one of the following two things are happening: Either one of your cli arguments are not recognized, "
                 "probably {} or whichever argument you are passing {} as a value to OR you are passing in an argument after "
-                "the `learning_rate_decay` argument.\n").format(
-                    value, action.dest, value, value)
+                "the `learning_rate_decay` argument.\n"
+            ).format(value, action.dest, value, value)
             raise error
 
 
@@ -773,6 +774,7 @@ def parse_comma_separated_list(element_type=str):
     Generates an argparse.Action that converts a string representing a comma separated list to a
     list and converts each element to a specified type.
     """
+
     # pylint: disable-msg=too-few-public-methods
     class _ParseCommaSeparatedList(argparse.Action):
         """

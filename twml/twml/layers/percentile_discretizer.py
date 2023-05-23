@@ -26,18 +26,20 @@ class PercentileDiscretizer(Layer):
     Note that if an input feature is rarely used, so will its associated output bin/features.
     """
 
-    def __init__(self,
-                 n_feature,
-                 n_bin,
-                 out_bits,
-                 bin_values=None,
-                 hash_keys=None,
-                 hash_values=None,
-                 bin_ids=None,
-                 feature_offsets=None,
-                 num_parts=1,
-                 cost_per_unit=100,
-                 **kwargs):
+    def __init__(
+        self,
+        n_feature,
+        n_bin,
+        out_bits,
+        bin_values=None,
+        hash_keys=None,
+        hash_values=None,
+        bin_ids=None,
+        feature_offsets=None,
+        num_parts=1,
+        cost_per_unit=100,
+        **kwargs
+    ):
         """
         Creates a non-initialized `PercentileDiscretizer` object.
         Before using the table you will have to initialize it. After initialization
@@ -105,16 +107,30 @@ class PercentileDiscretizer(Layer):
         # build variables
         self._out_bits = out_bits
         self._output_size = tf.convert_to_tensor(1 << out_bits, tf.int64)
-        self._hash_keys = (hash_keys if hash_keys is not None else np.empty(
-            n_feature, dtype=np.int64))
-        self._hash_values = (hash_values if hash_values is not None else
-                             np.empty(n_feature, dtype=np.int64))
-        self._bin_ids = (bin_ids if bin_ids is not None else np.empty(
-            max_discretizer_feature, dtype=np.int64))
-        self._bin_values = (bin_values if bin_values is not None else np.empty(
-            max_discretizer_feature, dtype=np.float32))
-        self._feature_offsets = (feature_offsets if feature_offsets is not None
-                                 else np.empty(n_feature, dtype=np.int64))
+        self._hash_keys = (
+            hash_keys if hash_keys is not None else np.empty(
+                n_feature, dtype=np.int64)
+        )
+        self._hash_values = (
+            hash_values
+            if hash_values is not None
+            else np.empty(n_feature, dtype=np.int64)
+        )
+        self._bin_ids = (
+            bin_ids
+            if bin_ids is not None
+            else np.empty(max_discretizer_feature, dtype=np.int64)
+        )
+        self._bin_values = (
+            bin_values
+            if bin_values is not None
+            else np.empty(max_discretizer_feature, dtype=np.float32)
+        )
+        self._feature_offsets = (
+            feature_offsets
+            if feature_offsets is not None
+            else np.empty(n_feature, dtype=np.int64)
+        )
         self.num_parts = num_parts
         self.cost_per_unit = cost_per_unit
 
@@ -167,9 +183,11 @@ class PercentileDiscretizer(Layer):
                 feature_offsets=self._feature_offsets,  # 0 : nbin_1 : max_feat
                 output_bits=self._out_bits,
                 feature_ids=tf.make_tensor_proto(
-                    self._hash_keys),  # feature ids to build internal hash map
+                    self._hash_keys
+                ),  # feature ids to build internal hash map
                 feature_indices=tf.make_tensor_proto(
-                    self._hash_values),  # keys associated w/ feat. indices
+                    self._hash_values
+                ),  # keys associated w/ feat. indices
                 start_compute=tf.constant(0, shape=[], dtype=tf.int64),
                 end_compute=tf.constant(-1, shape=[], dtype=tf.int64),
                 cost_per_unit=self.cost_per_unit,
@@ -183,8 +201,9 @@ class PercentileDiscretizer(Layer):
         batch_size = tf.to_int64(inputs.dense_shape[0])
         output_shape = [batch_size, self._output_size]
 
-        output = twml.SparseTensor(ids, discretizer_keys, discretizer_vals,
-                                   output_shape).to_tf()
+        output = twml.SparseTensor(
+            ids, discretizer_keys, discretizer_vals, output_shape
+        ).to_tf()
 
         if keep_inputs:
             # Note the non-discretized features will end up doubled,
@@ -194,15 +213,15 @@ class PercentileDiscretizer(Layer):
             non_mdl_size = tf.subtract(self._output_size, mdl_size)
             input_keys = tf.add(tf.floormod(keys, non_mdl_size), mdl_size)
 
-            new_input = twml.SparseTensor(ids=ids,
-                                          indices=input_keys,
-                                          values=vals,
-                                          dense_shape=output_shape).to_tf()
+            new_input = twml.SparseTensor(
+                ids=ids, indices=input_keys, values=vals, dense_shape=output_shape
+            ).to_tf()
 
             # concatenate discretizer output with original input
             sparse_add = tf.sparse_add(new_input, output)
-            output = tf.SparseTensor(sparse_add.indices, sparse_add.values,
-                                     output_shape)
+            output = tf.SparseTensor(
+                sparse_add.indices, sparse_add.values, output_shape
+            )
 
         return output
 

@@ -29,16 +29,20 @@ def linear_interp1(inputs, ref_inputs, ref_outputs):
     ref_outputs_ndims = ref_inputs.shape.ndims
 
     if ref_inputs_ndims != ndims:
-        raise ValueError("Dimension mismatch. inputs: %d, ref_inputs: %d" %
-                         (ndims, ref_inputs_ndims))
+        raise ValueError(
+            "Dimension mismatch. inputs: %d, ref_inputs: %d" % (
+                ndims, ref_inputs_ndims)
+        )
 
     if ref_outputs_ndims != ndims:
-        raise ValueError("Dimension mismatch. inputs: %d, ref_outputs: %d" %
-                         (ndims, ref_outputs_ndims))
+        raise ValueError(
+            "Dimension mismatch. inputs: %d, ref_outputs: %d"
+            % (ndims, ref_outputs_ndims)
+        )
 
     if ndims > 2:
-        raise ValueError("Input dimensions should be < 2D. But got %d." %
-                         ndims)
+        raise ValueError(
+            "Input dimensions should be < 2D. But got %d." % ndims)
 
     original_input_shape = tf.shape(inputs)
     # This is needed because isotonic_calibration expects:

@@ -48,7 +48,8 @@ def _return_tensors_from_checkpoint_folder(init_dir, model_name=None):
         model_path = tf.train.latest_checkpoint(init_dir)
         if model_path is None:
             raise ValueError(
-                "Could not find a valid model checkpoint inside the directory")
+                "Could not find a valid model checkpoint inside the directory"
+            )
     else:
         model_path = os.path.join(init_dir, model_name)
     reader = tf.train.NewCheckpointReader(model_path)
@@ -58,10 +59,7 @@ def _return_tensors_from_checkpoint_folder(init_dir, model_name=None):
         logging.error("Could not decode the string")
 
 
-def get_scope_dict(init_dir,
-                   incoming_scope_name,
-                   current_scope_name,
-                   model_name=None):
+def get_scope_dict(init_dir, incoming_scope_name, current_scope_name, model_name=None):
     """Returns tensors map from a checkpoint file.
 
     Args:
@@ -81,14 +79,15 @@ def get_scope_dict(init_dir,
     """
     init_map = {}
     reader_dump = _return_tensors_from_checkpoint_folder(
-        init_dir=init_dir, model_name=model_name).splitlines()
+        init_dir=init_dir, model_name=model_name
+    ).splitlines()
     for member in reader_dump:
         # remove global_step since it is not necessary
         if "global_step" not in member:
             saved_variables = str(member.split(" ")[0])
             saved_scope = saved_variables.rsplit("/", 1)[0] + "/"
-            new_scope = saved_scope.replace(incoming_scope_name,
-                                            current_scope_name, 1)
+            new_scope = saved_scope.replace(
+                incoming_scope_name, current_scope_name, 1)
             # create key in init_map
             if saved_scope not in init_map:  # pylint: disable=dict-keys-not-iterating
                 init_map[saved_scope] = new_scope
@@ -144,12 +143,10 @@ def get_init_map(
         exclude_scopes=exclude_name_scopes,
     )
 
-    if name_scope_to_prepend is not None and not name_scope_to_prepend.endswith(
-            "/"):
+    if name_scope_to_prepend is not None and not name_scope_to_prepend.endswith("/"):
         name_scope_to_prepend += "/"
 
-    if name_scope_to_remove is not None and not name_scope_to_remove.endswith(
-            "/"):
+    if name_scope_to_remove is not None and not name_scope_to_remove.endswith("/"):
         name_scope_to_remove += "/"
 
     init_map = {}
@@ -170,9 +167,9 @@ def get_init_map(
     return init_map
 
 
-def get_checkpoint_variable_names(model_dir,
-                                  exclude_var_names=None,
-                                  exclude_scopes=None):
+def get_checkpoint_variable_names(
+    model_dir, exclude_var_names=None, exclude_scopes=None
+):
     """
     Gets a list of variable names from the latest checkpoint in model_dir.
     Removes variables with scope defined by exclude_scopes, and/or with names defined by
@@ -191,10 +188,12 @@ def get_checkpoint_variable_names(model_dir,
 
     def _keep(name):
         if exclude_scopes and any(
-                name.startswith(exc_scope) for exc_scope in exclude_scopes):
+            name.startswith(exc_scope) for exc_scope in exclude_scopes
+        ):
             return False
         if exclude_var_names and any(
-                name.endswith(exc_var) for exc_var in exclude_var_names):
+            name.endswith(exc_var) for exc_var in exclude_var_names
+        ):
             return False
         return True
 
@@ -308,9 +307,11 @@ def convert_to_hparams(opt):
         )
         params_dict = opt.values()
     else:
-        raise ValueError("Input can not be of type %s. "
-                         "It can be one of { argparse.Namespace, dict, "
-                         "twitter.deepbird.hparam.HParams}." % type(opt))
+        raise ValueError(
+            "Input can not be of type %s. "
+            "It can be one of { argparse.Namespace, dict, "
+            "twitter.deepbird.hparam.HParams}." % type(opt)
+        )
 
     params = HParams()
     # Hack to convert all parameters from hdfs:/// format to hdfs://default/
@@ -346,7 +347,8 @@ def dynamic_partition(features, partitions, num_partitions=2, name=None):
     """
     if not isinstance(features, (dict, list, tuple, tf.Tensor)):
         raise AssertionError(
-            "features container must be a dict, list, or tuple, tf.Tensor")
+            "features container must be a dict, list, or tuple, tf.Tensor"
+        )
 
     if isinstance(partitions, tf.Tensor):
         partitions = tf.cast(partitions, tf.int32)
@@ -362,19 +364,21 @@ def dynamic_partition(features, partitions, num_partitions=2, name=None):
         else:
             outputs.append({})
 
-    iterable = features.items() if isinstance(features,
-                                              dict) else enumerate(features)
+    iterable = features.items() if isinstance(
+        features, dict) else enumerate(features)
 
     # Handling partitions of nested classes handled here:
     # Recursively call dynamic_partition for containers
     for key, feature in iterable:
         name_key = None if name is None else name + "_" + str(key)
         if isinstance(partitions, tf.Tensor):
-            results = tf.dynamic_partition(feature, partitions, num_partitions,
-                                           name_key)
+            results = tf.dynamic_partition(
+                feature, partitions, num_partitions, name_key
+            )
         else:
-            results = tf.dynamic_partition(feature, partitions[key],
-                                           num_partitions[key], name_key)
+            results = tf.dynamic_partition(
+                feature, partitions[key], num_partitions[key], name_key
+            )
             # Append the result to the proper output container
         for idx, result in enumerate(results):
             outputs[idx][key] = result
@@ -447,7 +451,8 @@ def read_file(filename, decode=False):
 
 def setup_tf_logging_formatter():
     formatter = _logging.Formatter(
-        "%(asctime)s [%(levelname)s] %(name)s: %(message)s", None)
+        "%(asctime)s [%(levelname)s] %(name)s: %(message)s", None
+    )
     # Setting up absl logging verbosity
     logging.set_verbosity("info")
     logging.set_stderrthreshold("info")
@@ -483,9 +488,7 @@ def weighted_average(values, weights):
     return tf.reduce_sum(tf.multiply(values, weights)) / tf.reduce_sum(weights)
 
 
-def backup_checkpoint(checkpoint_path_prefix,
-                      backup_path="backup",
-                      empty_backup=True):
+def backup_checkpoint(checkpoint_path_prefix, backup_path="backup", empty_backup=True):
     """
     Creates a backup copy of a checkpoint in backup_dir.
     This function is used by the Trainer for early-stopping.
@@ -514,16 +517,19 @@ def backup_checkpoint(checkpoint_path_prefix,
     try:
         checkpoint_files = tf.io.gfile.glob(checkpoint_path_prefix + "*")
         if len(checkpoint_files) == 0:
-            raise twml.errors.CheckpointNotFoundError("%s not found" %
-                                                      checkpoint_path_prefix)
+            raise twml.errors.CheckpointNotFoundError(
+                "%s not found" % checkpoint_path_prefix
+            )
         for filename in checkpoint_files:
             n_backup += 1
-            tf.io.gfile.copy(src=filename,
-                             dst=os.path.join(backup_path,
-                                              os.path.basename(filename)))
+            tf.io.gfile.copy(
+                src=filename, dst=os.path.join(
+                    backup_path, os.path.basename(filename))
+            )
     except tf.errors.OpError as ex:
         raise twml.errors.CheckpointNotFoundError(
-            f"{str(ex)}\n {checkpoint_path_prefix} not found.")
+            f"{str(ex)}\n {checkpoint_path_prefix} not found."
+        )
 
     # tf.train.latest_checkpoint needs the 'checkpoint' file.
     with tf.io.gfile.GFile(os.path.join(backup_path, "checkpoint"), "w") as f:
@@ -631,8 +637,8 @@ def list_files_by_datetime(
         raise AssertionError
 
     if isinstance(start_datetime, str):
-        start_datetime = datetime.strptime(start_datetime,
-                                           datetime_prefix_format)
+        start_datetime = datetime.strptime(
+            start_datetime, datetime_prefix_format)
 
     if isinstance(end_datetime, str):
         end_datetime = datetime.strptime(end_datetime, datetime_prefix_format)
@@ -653,8 +659,8 @@ def list_files_by_datetime(
 
     # a set is used because there might be some repeated globs depending on dt_prefix_format
     globs = {
-        os.path.join(base_path, dt.strftime(datetime_prefix_format),
-                     "*.%s" % extension)
+        os.path.join(base_path, dt.strftime(
+            datetime_prefix_format), "*.%s" % extension)
         for dt in rrule.rrule(
             freq=rrule.HOURLY,
             interval=hour_resolution,
@@ -663,7 +669,8 @@ def list_files_by_datetime(
         )
     }
     nested_files = Parallel(n_jobs=parallelism, backend="threading")(
-        delayed(_handle_missing_globs)(p) for p in globs)
+        delayed(_handle_missing_globs)(p) for p in globs
+    )
     flattened_files = list(itertools.chain.from_iterable(nested_files))
 
     if not flattened_files:
@@ -702,15 +709,17 @@ def limit_sparse_tensor_size(sparse_tf, input_size_bits, mask_indices=True):
         raise TypeError(
             "Input argument `sparse_tf` should either be of type"
             "twml.SparseTensor of tf.SparseTensor. Found type: {}".format(
-                type(sparse_tf)))
+                type(sparse_tf)
+            )
+        )
     if mask_indices:
         indices = twml.limit_bits(sparse_tf.indices, input_size_bits)
     else:
         indices = sparse_tf.indices
     dense_shape = tf.stack([sparse_tf.dense_shape[0], 1 << input_size_bits])
-    return tf.SparseTensor(indices=indices,
-                           values=sparse_tf.values,
-                           dense_shape=dense_shape)
+    return tf.SparseTensor(
+        indices=indices, values=sparse_tf.values, dense_shape=dense_shape
+    )
 
 
 def create_module_spec(mlp_fn, mode, params, drop_collections=None):
@@ -729,18 +738,12 @@ def create_module_spec(mlp_fn, mode, params, drop_collections=None):
     import tensorflow_hub as hub  # noqa: F402
 
     tags_and_args = [
-        (set(), {
-            "params": params,
-            "mode": mode
-        }),  # serving graph
-        ({"train"}, {
-            "params": params,
-            "mode": mode
-        }),  # training graph
+        (set(), {"params": params, "mode": mode}),  # serving graph
+        ({"train"}, {"params": params, "mode": mode}),  # training graph
     ]
-    spec = hub.create_module_spec(mlp_fn,
-                                  tags_and_args=tags_and_args,
-                                  drop_collections=drop_collections)
+    spec = hub.create_module_spec(
+        mlp_fn, tags_and_args=tags_and_args, drop_collections=drop_collections
+    )
     return spec
 
 
@@ -778,8 +781,9 @@ def change_name_scope_from_dir(init_scope_name, final_scope_name, save_dir):
     latest_backup_checkpoint = tf.train.latest_checkpoint(backup_dir)
 
     if latest_backup_checkpoint is None or (
-            os.path.basename(latest_checkpoint)
-            != os.path.basename(latest_backup_checkpoint)):
+        os.path.basename(latest_checkpoint)
+        != os.path.basename(latest_backup_checkpoint)
+    ):
         backup_checkpoint(latest_checkpoint, backup_dir, empty_backup=False)
 
     variables = tf.train.list_variables(backup_dir)
@@ -789,9 +793,9 @@ def change_name_scope_from_dir(init_scope_name, final_scope_name, save_dir):
             var = tf.train.load_variable(backup_dir, name)
             # Append both the rename and the original variable
             new_variables.append(
-                tf.Variable(var,
-                            name=name.replace(init_scope_name,
-                                              final_scope_name)))
+                tf.Variable(var, name=name.replace(
+                    init_scope_name, final_scope_name))
+            )
             new_variables.append(tf.Variable(var, name=name))
         # Save this to the checkpoint in the save_dir
         saver = tf.train.Saver(new_variables)
@@ -827,11 +831,11 @@ def _extract_hash_space_bits(feature_config):
     Returns:
       Dictionary of tensor names and hash space bits.
     """
-    if not isinstance(feature_config,
-                      twml.contrib.feature_config.FeatureConfig):
+    if not isinstance(feature_config, twml.contrib.feature_config.FeatureConfig):
         fc_type = type(feature_config)
         raise TypeError(
-            f"Feature config must be of type contrib.FeatureConfig: {fc_type}")
+            f"Feature config must be of type contrib.FeatureConfig: {fc_type}"
+        )
     sparse_shapes_dict = {}
     for config in feature_config.sparse_extraction_configs:
         sparse_shapes_dict[config.output_name] = config.hash_space_bits
@@ -848,8 +852,7 @@ def fix_shape_sparse(features, feature_config):
       feature_config:
         Feature Configuration of the type contrib.FeatureConfig
     """
-    if not isinstance(feature_config,
-                      twml.contrib.feature_config.FeatureConfig):
+    if not isinstance(feature_config, twml.contrib.feature_config.FeatureConfig):
         raise TypeError(
             f"Feature config must be of type contrib.FeatureConfig, currently of {type(feature_config)}"
         )
@@ -859,9 +862,9 @@ def fix_shape_sparse(features, feature_config):
             f"features must be of dictionary type, it is of {type(features)} type"
         )
     for key in set(features) & set(sparse_shape):
-        features[key] = limit_sparse_tensor_size(features[key],
-                                                 sparse_shape[key],
-                                                 mask_indices=False)
+        features[key] = limit_sparse_tensor_size(
+            features[key], sparse_shape[key], mask_indices=False
+        )
 
 
 def touch_file_in_dir(directory, filename):

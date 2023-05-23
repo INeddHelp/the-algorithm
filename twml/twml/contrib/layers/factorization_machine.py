@@ -51,20 +51,22 @@ class FactorizationMachine(Layer):
         This parameter can also be a list of binary values if `inputs` passed to `call` a list.
     """
 
-    def __init__(self,
-                 num_latent_variables=10,
-                 weight_initializer=None,
-                 activation=None,
-                 trainable=True,
-                 name=None,
-                 use_sparse_grads=True,
-                 use_binary_values=False,
-                 weight_regularizer=None,
-                 substract_self_cross=True,
-                 **kwargs):
-        super(FactorizationMachine, self).__init__(trainable=trainable,
-                                                   name=name,
-                                                   **kwargs)
+    def __init__(
+        self,
+        num_latent_variables=10,
+        weight_initializer=None,
+        activation=None,
+        trainable=True,
+        name=None,
+        use_sparse_grads=True,
+        use_binary_values=False,
+        weight_regularizer=None,
+        substract_self_cross=True,
+        **kwargs
+    ):
+        super(FactorizationMachine, self).__init__(
+            trainable=trainable, name=name, **kwargs
+        )
 
         if weight_initializer is None:
             weight_initializer = tf.zeros_initializer()
@@ -87,9 +89,11 @@ class FactorizationMachine(Layer):
             self.num_latent_variables * dtype.size
         if requested_size >= 2**31:
             raise ValueError(
-                "Weight tensor can not be larger than 2GB. " %
-                "Requested Dimensions(%d, %d) of type %s (%d bytes total)" (
-                    input_shape[1], self.num_latent_variables, dtype.name))
+                "Weight tensor can not be larger than 2GB. "
+                % "Requested Dimensions(%d, %d) of type %s (%d bytes total)"(
+                    input_shape[1], self.num_latent_variables, dtype.name
+                )
+            )
 
         if not callable(self.weight_initializer):
             shape = None
@@ -156,21 +160,23 @@ class FactorizationMachine(Layer):
                 # Second term: Sum_k Sum_i [ (v_ik * x_i)^2 ]
                 v_times_x_2 = v_times_x**2
                 self_crosses = tf.reduce_sum(
-                    tf.segment_sum(v_times_x_2, batch_ids, name=self.name), 1)
+                    tf.segment_sum(v_times_x_2, batch_ids, name=self.name), 1
+                )
                 outputs = all_crosses_squared - self_crosses
             else:
                 outputs = all_crosses_squared
         else:
             # need to check if prediction is faster with code below
             crossTerm = tf.reduce_sum(
-                (tf.sparse_tensor_dense_matmul(sp_x, self.weight)**2), 1)
+                (tf.sparse_tensor_dense_matmul(sp_x, self.weight) ** 2), 1
+            )
 
             if self.substract_self_cross:
                 # compute self-cross term
                 self_crossTerm = tf.reduce_sum(
                     tf.segment_sum(
-                        (tf.gather(self.weight, indices) * values)**2,
-                        batch_ids),
+                        (tf.gather(self.weight, indices) * values) ** 2, batch_ids
+                    ),
                     1,
                 )
                 outputs = crossTerm - self_crossTerm
@@ -181,8 +187,8 @@ class FactorizationMachine(Layer):
             outputs = self.activation(outputs)
 
         outputs = tf.reshape(outputs, [-1, 1], name=self.name)
-        outputs = _pad_empty_outputs(outputs,
-                                     tf.cast(sp_x.dense_shape[0], tf.int32))
+        outputs = _pad_empty_outputs(
+            outputs, tf.cast(sp_x.dense_shape[0], tf.int32))
         # set more explicit and static shape to avoid shape inference error
         # valueError: The last dimension of the inputs to `Dense` should be defined. Found `None`
         outputs.set_shape([None, 1])

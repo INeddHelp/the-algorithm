@@ -30,8 +30,7 @@ RCE = "rce"
 LOSS = "loss"
 
 
-def _repartition(feature_list_queue, fnames_ftypes,
-                 split_feature_group_on_period):
+def _repartition(feature_list_queue, fnames_ftypes, split_feature_group_on_period):
     """
     Iterate through letters to partition each feature by prefix, and then put each tuple
       (prefix, feature_partition) into the feature_list_queue
@@ -49,17 +48,17 @@ def _repartition(feature_list_queue, fnames_ftypes,
     split_character = "." if split_feature_group_on_period else None
     # Compute the longest prefix of the words
     prefix = longest_common_prefix(
-        strings=[fname for fname, _ in fnames_ftypes],
-        split_character=split_character)
+        strings=[fname for fname, _ in fnames_ftypes], split_character=split_character
+    )
 
     # Separate the features by prefix
     prefix_to_features = defaultdict(list)
     for fname, ftype in fnames_ftypes:
         if not fname.startswith(prefix):
             raise AssertionError
-        new_prefix = _expand_prefix(fname=fname,
-                                    prefix=prefix,
-                                    split_character=split_character)
+        new_prefix = _expand_prefix(
+            fname=fname, prefix=prefix, split_character=split_character
+        )
         prefix_to_features[new_prefix].append((fname, ftype))
 
     # Add all of the new partitions to the queue
@@ -81,13 +80,17 @@ def _infer_if_is_metric_larger_the_better(stopping_metric):
         raise ValueError("Error: Stopping Metric cannot be None")
     elif stopping_metric.startswith(LOSS):
         logging.info(
-            "Interpreting {} to be a metric where larger numbers are worse".
-            format(stopping_metric))
+            "Interpreting {} to be a metric where larger numbers are worse".format(
+                stopping_metric
+            )
+        )
         is_metric_larger_the_better = False
     else:
         logging.info(
-            "Interpreting {} to be a metric where larger numbers are better".
-            format(stopping_metric))
+            "Interpreting {} to be a metric where larger numbers are better".format(
+                stopping_metric
+            )
+        )
         is_metric_larger_the_better = True
     return is_metric_larger_the_better
 
@@ -104,23 +107,27 @@ def _check_whether_tree_should_expand(
       - the metric is positive (e.g. ROC_AUC) and computed_performance is nontrivially smaller than the baseline_performance
       - the metric is negative (e.g. LOSS) and computed_performance is nontrivially larger than the baseline_performance
     """
-    difference = (baseline_performance[stopping_metric] -
-                  computed_performance[stopping_metric]
-                  ) / baseline_performance[stopping_metric]
+    difference = (
+        baseline_performance[stopping_metric] -
+        computed_performance[stopping_metric]
+    ) / baseline_performance[stopping_metric]
 
     if not is_metric_larger_the_better:
         difference = -difference
 
-    logging.info("Found a {} difference of {}. Sensitivity is {}.".format(
-        "positive" if is_metric_larger_the_better else "negative",
-        difference,
-        sensitivity,
-    ))
+    logging.info(
+        "Found a {} difference of {}. Sensitivity is {}.".format(
+            "positive" if is_metric_larger_the_better else "negative",
+            difference,
+            sensitivity,
+        )
+    )
     return difference > sensitivity
 
 
 def _compute_multiple_permuted_performances_from_trainer(
-        factory, fname_ftypes, trainer, parse_fn, record_count):
+    factory, fname_ftypes, trainer, parse_fn, record_count
+):
     """Compute performances with fname and fype permuted"""
     metrics_hook = _get_metrics_hook(trainer)
     trainer._estimator.evaluate(
@@ -129,17 +136,17 @@ def _compute_multiple_permuted_performances_from_trainer(
             parse_fn=parse_fn,
             fname_ftypes=fname_ftypes,
         ),
-        steps=(record_count + trainer._params.eval_batch_size) //
-        trainer._params.eval_batch_size,
+        steps=(record_count + trainer._params.eval_batch_size)
+        // trainer._params.eval_batch_size,
         hooks=[metrics_hook],
         checkpoint_path=trainer.best_or_latest_checkpoint,
     )
     return metrics_hook.metric_values
 
 
-def _get_extra_feature_group_performances(factory, trainer, parse_fn,
-                                          extra_groups, feature_to_type,
-                                          record_count):
+def _get_extra_feature_group_performances(
+    factory, trainer, parse_fn, extra_groups, feature_to_type, record_count
+):
     """Compute performance differences for the extra feature groups"""
     extra_group_feature_performance_results = {}
     for group_name, raw_feature_regex_list in extra_groups.items():
@@ -153,19 +160,25 @@ def _get_extra_feature_group_performances(factory, trainer, parse_fn,
 
         fnames_ftypes = [(fname, feature_to_type[fname]) for fname in fnames]
 
-        logging.info("Extracted extra group {} with features {}".format(
-            group_name, fnames_ftypes))
+        logging.info(
+            "Extracted extra group {} with features {}".format(
+                group_name, fnames_ftypes
+            )
+        )
         extra_group_feature_performance_results[
-            group_name] = _compute_multiple_permuted_performances_from_trainer(
-                factory=factory,
-                fname_ftypes=fnames_ftypes,
-                trainer=trainer,
-                parse_fn=parse_fn,
-                record_count=record_count,
+            group_name
+        ] = _compute_multiple_permuted_performances_from_trainer(
+            factory=factory,
+            fname_ftypes=fnames_ftypes,
+            trainer=trainer,
+            parse_fn=parse_fn,
+            record_count=record_count,
         )
         logging.info(
             "\n\nImportances computed for {} in {} seconds \n\n".format(
-                group_name, int(time.time() - start)))
+                group_name, int(time.time() - start)
+            )
+        )
     return extra_group_feature_performance_results
 
 
@@ -231,18 +244,24 @@ def _feature_importances_tree_algorithm(
 
     if stopping_metric not in baseline_performance:
         raise ValueError(
-            "The stopping metric '{}' not found in baseline_performance. Metrics are {}"
-            .format(stopping_metric, list(baseline_performance.keys())))
+            "The stopping metric '{}' not found in baseline_performance. Metrics are {}".format(
+                stopping_metric, list(baseline_performance.keys())
+            )
+        )
 
     is_metric_larger_the_better = (
-        is_metric_larger_the_better if is_metric_larger_the_better is not None
-        else _infer_if_is_metric_larger_the_better(stopping_metric))
+        is_metric_larger_the_better
+        if is_metric_larger_the_better is not None
+        else _infer_if_is_metric_larger_the_better(stopping_metric)
+    )
     logging.info(
         "Using {} as the stopping metric for the tree algorithm".format(
-            stopping_metric))
+            stopping_metric)
+    )
 
-    feature_to_type = _get_feature_types_from_records(records=factory.records,
-                                                      fnames=fnames)
+    feature_to_type = _get_feature_types_from_records(
+        records=factory.records, fnames=fnames
+    )
     all_feature_types = list(feature_to_type.items())
 
     individual_feature_performances = {}
@@ -269,8 +288,10 @@ def _feature_importances_tree_algorithm(
 
             # Compute performance from permuting all features in fname_ftypes
             logging.info(
-                "\n\nComputing importances for {} ({}...). {} elements left in the queue \n\n"
-                .format(prefix, fnames_ftypes[:5], feature_list_queue.qsize()))
+                "\n\nComputing importances for {} ({}...). {} elements left in the queue \n\n".format(
+                    prefix, fnames_ftypes[:5], feature_list_queue.qsize()
+                )
+            )
             start = time.time()
             computed_performance = _compute_multiple_permuted_performances_from_trainer(
                 factory=factory,
@@ -281,16 +302,21 @@ def _feature_importances_tree_algorithm(
             )
             logging.info(
                 "\n\nImportances computed for {} in {} seconds \n\n".format(
-                    prefix, int(time.time() - start)))
+                    prefix, int(time.time() - start)
+                )
+            )
             if len(fnames_ftypes) == 1:
-                individual_feature_performances[fnames_ftypes[0]
-                                                [0]] = computed_performance
+                individual_feature_performances[
+                    fnames_ftypes[0][0]
+                ] = computed_performance
             else:
                 feature_group_performances[prefix] = computed_performance
             # Dig deeper into the features in fname_ftypes only if there is more than one feature in the
             #    list and the performance drop is nontrivial
-            logging.info("Checking performance for {} ({}...)".format(
-                prefix, fnames_ftypes[:5]))
+            logging.info(
+                "Checking performance for {} ({}...)".format(
+                    prefix, fnames_ftypes[:5])
+            )
             check = _check_whether_tree_should_expand(
                 baseline_performance=baseline_performance,
                 computed_performance=computed_performance,
@@ -307,30 +333,31 @@ def _feature_importances_tree_algorithm(
                     split_feature_group_on_period=split_feature_group_on_period,
                 )
             else:
-                logging.info("Not expanding {} ({}...)".format(
-                    prefix, fnames_ftypes[:5]))
+                logging.info(
+                    "Not expanding {} ({}...)".format(
+                        prefix, fnames_ftypes[:5])
+                )
 
     # Baseline performance is grouped in with individual_feature_importance_results
     individual_feature_performance_results = dict(
-        out, **{
-            k: v
-            for k, v in individual_feature_performances.items()
-        })
+        out, **{k: v for k, v in individual_feature_performances.items()}
+    )
     group_feature_performance_results = {
-        k: v
-        for k, v in feature_group_performances.items()
+        k: v for k, v in feature_group_performances.items()
     }
 
     if extra_groups is not None:
-        logging.info("Computing performances for extra groups {}".format(
-            extra_groups.keys()))
+        logging.info(
+            "Computing performances for extra groups {}".format(
+                extra_groups.keys())
+        )
         for group_name, performances in _get_extra_feature_group_performances(
-                factory=factory,
-                trainer=trainer,
-                parse_fn=parse_fn,
-                extra_groups=extra_groups,
-                feature_to_type=feature_to_type,
-                record_count=record_count,
+            factory=factory,
+            trainer=trainer,
+            parse_fn=parse_fn,
+            extra_groups=extra_groups,
+            feature_to_type=feature_to_type,
+            record_count=record_count,
         ).items():
             group_feature_performance_results[group_name] = performances
     else:
@@ -361,8 +388,9 @@ def _feature_importances_serial_algorithm(
         file_list=file_list,
         datarecord_filter_fn=datarecord_filter_fn,
     )
-    feature_to_type = _get_feature_types_from_records(records=factory.records,
-                                                      fnames=fnames)
+    feature_to_type = _get_feature_types_from_records(
+        records=factory.records, fnames=fnames
+    )
 
     out = {}
     for fname, ftype in list(feature_to_type.items()) + [(None, None)]:
@@ -378,7 +406,9 @@ def _feature_importances_serial_algorithm(
         )
         logging.info(
             "\n\nImportances computed for {} in {} seconds \n\n".format(
-                fname, int(time.time() - start)))
+                fname, int(time.time() - start)
+            )
+        )
     # The serial algorithm does not compute group feature results.
     return {INDIVIDUAL: out, GROUP: {}}
 
@@ -389,13 +419,15 @@ def _process_feature_name_for_mldash(feature_name):
     return feature_name.replace("/", "__")
 
 
-def compute_feature_importances(trainer,
-                                data_dir=None,
-                                feature_config=None,
-                                algorithm=TREE,
-                                parse_fn=None,
-                                datarecord_filter_fn=None,
-                                **kwargs):
+def compute_feature_importances(
+    trainer,
+    data_dir=None,
+    feature_config=None,
+    algorithm=TREE,
+    parse_fn=None,
+    datarecord_filter_fn=None,
+    **kwargs
+):
     """Perform a feature importance analysis on a trained model
     Args:
       trainer: (DataRecordTrainer): A DataRecordTrainer object
@@ -411,8 +443,10 @@ def compute_feature_importances(trainer,
     """
     # We only use the trainer's eval files if an override data_dir is not provided
     if data_dir is None:
-        logging.info("Using trainer._eval_files (found {} as files)".format(
-            trainer._eval_files))
+        logging.info(
+            "Using trainer._eval_files (found {} as files)".format(
+                trainer._eval_files)
+        )
         file_list = trainer._eval_files
     else:
         logging.info(
@@ -427,31 +461,32 @@ def compute_feature_importances(trainer,
         )
         out = None
     else:
-        parse_fn = parse_fn if parse_fn is not None else feature_config.get_parse_fn(
-        )
+        parse_fn = parse_fn if parse_fn is not None else feature_config.get_parse_fn()
         fnames = _get_feature_name_from_config(feature_config)
         logging.info("Computing importances for {}".format(fnames))
         logging.info(
             "Using the {} feature importance computation algorithm".format(
-                algorithm))
+                algorithm)
+        )
         algorithm = {
             SERIAL: _feature_importances_serial_algorithm,
             TREE: _feature_importances_tree_algorithm,
         }[algorithm]
-        out = algorithm(data_dir=data_dir,
-                        trainer=trainer,
-                        parse_fn=parse_fn,
-                        fnames=fnames,
-                        file_list=file_list,
-                        datarecord_filter_fn=datarecord_filter_fn,
-                        **kwargs)
+        out = algorithm(
+            data_dir=data_dir,
+            trainer=trainer,
+            parse_fn=parse_fn,
+            fnames=fnames,
+            file_list=file_list,
+            datarecord_filter_fn=datarecord_filter_fn,
+            **kwargs
+        )
     return out
 
 
-def write_feature_importances_to_hdfs(trainer,
-                                      feature_importances,
-                                      output_path=None,
-                                      metric="roc_auc"):
+def write_feature_importances_to_hdfs(
+    trainer, feature_importances, output_path=None, metric="roc_auc"
+):
     """Publish a feature importance analysis to hdfs as a tsv
     Args:
       (see compute_feature_importances for other args)
@@ -470,23 +505,23 @@ def write_feature_importances_to_hdfs(trainer,
 
     output_path = "{}/feature_importances-{}".format(
         trainer._save_dir[:-1]
-        if trainer._save_dir.endswith("/") else trainer._save_dir,
+        if trainer._save_dir.endswith("/")
+        else trainer._save_dir,
         output_path if output_path is not None else str(time.time()),
     )
 
     if len(perfs) > 0:
-        logging.info("Writing feature_importances for {} to hdfs".format(
-            perfs.keys()))
-        entries = [{
-            "name":
-            name,
-            "drop":
-            perfs["None"] - perfs[name],
-            "pdrop":
-            100 * (perfs["None"] - perfs[name]) / (perfs["None"] + 1e-8),
-            "perf":
-            perfs[name],
-        } for name in perfs.keys()]
+        logging.info(
+            "Writing feature_importances for {} to hdfs".format(perfs.keys()))
+        entries = [
+            {
+                "name": name,
+                "drop": perfs["None"] - perfs[name],
+                "pdrop": 100 * (perfs["None"] - perfs[name]) / (perfs["None"] + 1e-8),
+                "perf": perfs[name],
+            }
+            for name in perfs.keys()
+        ]
         out = ["Name\tPerformance Drop\tPercent Performance Drop\tPerformance"]
         for entry in sorted(entries, key=lambda d: d["drop"]):
             out.append("{name}\t{drop}\t{pdrop}%\t{perf}".format(**entry))
@@ -499,9 +534,9 @@ def write_feature_importances_to_hdfs(trainer,
     return output_path
 
 
-def write_feature_importances_to_ml_dash(trainer,
-                                         feature_importances,
-                                         feature_config=None):
+def write_feature_importances_to_ml_dash(
+    trainer, feature_importances, feature_config=None
+):
     # type: (DataRecordTrainer, FeatureConfig, dict) -> None
     """Publish feature importances + all feature names to ML Metastore
     Args:
@@ -511,13 +546,16 @@ def write_feature_importances_to_ml_dash(trainer,
       feature_importances (dict, default=None): Dictionary of precomputed feature importances
       feature_importance_metric (str, default=None): The metric to write to ML Dashboard
     """
-    experiment_tracking_path = (trainer.experiment_tracker.tracking_path
-                                if trainer.experiment_tracker.tracking_path
-                                else ExperimentTracker.guess_path(
-                                    trainer._save_dir))
+    experiment_tracking_path = (
+        trainer.experiment_tracker.tracking_path
+        if trainer.experiment_tracker.tracking_path
+        else ExperimentTracker.guess_path(trainer._save_dir)
+    )
 
-    logging.info("Computing feature importances for run: {}".format(
-        experiment_tracking_path))
+    logging.info(
+        "Computing feature importances for run: {}".format(
+            experiment_tracking_path)
+    )
 
     feature_importance_list = []
     for key in feature_importances:
@@ -528,12 +566,16 @@ def write_feature_importances_to_ml_dash(trainer,
                 try:
                     imps[metric_name] = float(value)
                     logging.info(
-                        "Wrote feature importance value {} for metric: {}".
-                        format(str(value), metric_name))
+                        "Wrote feature importance value {} for metric: {}".format(
+                            str(value), metric_name
+                        )
+                    )
                 except Exception as ex:
                     logging.error(
-                        "Skipping writing metric:{} to ML Metastore due to invalid metric value: {} or value type: {}. Exception: {}"
-                        .format(metric_name, str(value), type(value), str(ex)))
+                        "Skipping writing metric:{} to ML Metastore due to invalid metric value: {} or value type: {}. Exception: {}".format(
+                            metric_name, str(value), type(value), str(ex)
+                        )
+                    )
                     pass
 
             feature_importance_list.append(
@@ -543,12 +585,15 @@ def write_feature_importances_to_ml_dash(trainer,
                         feature_name),
                     feature_importance_metrics=imps,
                     is_group=key == GROUP,
-                ))
+                )
+            )
 
     # setting feature config to match the one used in compute_feature_importances
     feature_config = feature_config or trainer._feature_config
-    feature_names = FeatureNames(run_id=experiment_tracking_path,
-                                 names=list(feature_config.features.keys()))
+    feature_names = FeatureNames(
+        run_id=experiment_tracking_path, names=list(
+            feature_config.features.keys())
+    )
 
     try:
         client = ModelRepoClient()
@@ -560,4 +605,5 @@ def write_feature_importances_to_ml_dash(trainer,
         logging.error(
             "Feature importance is not being written due to: "
             "HTTPError when attempting to write to ML Metastore: \n{}.".format(
-                err))
+                err)
+        )

@@ -172,17 +172,18 @@ class EarlyStopHook(GetMetricsHook):
             # TODO try to read epoch from a file that we create
             if tf.io.gfile.exists(self._file_path):
                 # delete the file if it exists (not sure this makes sense)
-                logging.info("EarlyStopHook: Removing existing file: %s.",
-                             self._file_path)
+                logging.info(
+                    "EarlyStopHook: Removing existing file: %s.", self._file_path
+                )
                 tf.io.gfile.remove(self._file_path)
 
         # best_checkpoint dir will contain the best checkpoint
-        self._best_checkpoint_path = os.path.join(checkpoint_dir,
-                                                  "best_checkpoint")
-        self._eval_checkpoint_path = os.path.join(checkpoint_dir,
-                                                  "eval_checkpoint")
-        self._best_metric_path = os.path.join(self._best_checkpoint_path,
-                                              self._metric)
+        self._best_checkpoint_path = os.path.join(
+            checkpoint_dir, "best_checkpoint")
+        self._eval_checkpoint_path = os.path.join(
+            checkpoint_dir, "eval_checkpoint")
+        self._best_metric_path = os.path.join(
+            self._best_checkpoint_path, self._metric)
 
         if tf.io.gfile.exists(self._best_metric_path):
             with tf.io.gfile.GFile(self._best_metric_path, mode="r") as f:
@@ -218,7 +219,8 @@ class EarlyStopHook(GetMetricsHook):
             if metric not in eval_metric_ops:
                 raise ValueError(
                     "Expecting early_stop_metric '%s' key in eval_metric_ops dict"
-                    % (metric))
+                    % (metric)
+                )
             # get the value_op from the (value_op, update_op) value
             return {k: v[0] for k, v in eval_metric_ops.items()}
 
@@ -397,9 +399,11 @@ class MetricsUpdateHook(GetMetricsHook):
         if every_n_iter is not None and every_n_iter <= 0:
             raise ValueError("invalid every_n_iter=%s." % every_n_iter)
 
-        self._timer = (NeverTriggerTimer() if only_log_at_end else
-                       SecondOrStepTimer(every_secs=every_n_secs,
-                                         every_steps=every_n_iter))
+        self._timer = (
+            NeverTriggerTimer()
+            if only_log_at_end
+            else SecondOrStepTimer(every_secs=every_n_secs, every_steps=every_n_iter)
+        )
 
         self._should_trigger = False
         self._iter_count = 0
@@ -441,8 +445,7 @@ class MetricsUpdateHook(GetMetricsHook):
         if self._should_trigger:
             self.report_metrics()
         self._iter_count += 1
-        return super(MetricsUpdateHook,
-                     self).after_run(run_context, run_values)
+        return super(MetricsUpdateHook, self).after_run(run_context, run_values)
 
     def end(self, session):
         """Triggered after each epoch."""
@@ -478,8 +481,9 @@ class EarlyStopDuration(tf.train.SessionRunHook):
         This is usually set to True to kill a validation job in a distributed setting.
     """
 
-    def __init__(self, max_duration: float, exit_on_end: bool, save_dir: str,
-                 overwrite: bool):
+    def __init__(
+        self, max_duration: float, exit_on_end: bool, save_dir: str, overwrite: bool
+    ):
         self._overwrite = overwrite
         self._save_dir = save_dir
         self._exit_on_end = exit_on_end
@@ -505,8 +509,9 @@ class EarlyStopDuration(tf.train.SessionRunHook):
                 recorded_elapsed_time = json.loads(file.read())["elapsed_time"]
 
         elapsed_time = (
-            recorded_elapsed_time +
-            (datetime.now() - self._last_time_check).total_seconds())
+            recorded_elapsed_time
+            + (datetime.now() - self._last_time_check).total_seconds()
+        )
         self._last_time_check = datetime.now()
 
         if self._overwrite:
