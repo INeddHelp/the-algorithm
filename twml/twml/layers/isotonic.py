@@ -60,7 +60,6 @@ class Isotonic(Layer):
 
   def build(self, input_shape):  # pylint: disable=unused-argument
     """Creates the variables of the layer."""
-
     self.built = True
 
   def call(self, inputs, **kwargs):  # pylint: disable=unused-argument

@@ -73,7 +73,6 @@ class IsotonicFeature(CalibrationFeature):
         Returns:
           (list[int]) List of sample indices defining bin boundaries
         """
-
         if bins > n_samples:
             raise ValueError(
                 "The number of bins needs to be less than or equal to the number of samples. "

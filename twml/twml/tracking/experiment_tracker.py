@@ -183,7 +183,6 @@ class ExperimentTracker(object):
         Returns:
           The tracker's eval hook which is appended to eval_hooks.
         """
-
         # disable this tracker if legacy TrackRun hook is present
         # TODO: remove this once we completely deprecate the old TrackRun interface
         if eval_hooks is not None:
@@ -451,7 +450,6 @@ class ExperimentTracker(object):
           metrics (dict):
             The dict of the metrics and their values.
         """
-
         if self.disabled or not self._env_eligible_for_recording_experiment:
             return None
 

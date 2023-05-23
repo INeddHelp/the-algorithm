@@ -877,7 +877,6 @@ def _binary_cross_entropy(pred, target, name):
 # https://github.com/tensorflow/tensorflow/blob/v1.5.0/tensorflow/python/ops/metrics_impl.py#L39
 def _metric_variable(shape, dtype, validate_shape=True, name=None):
   """Create variable in `GraphKeys.(LOCAL|METRIC_VARIABLES`) collections."""
-
   return tf.Variable(
     lambda: tf.zeros(shape, dtype),
     trainable=False,
@@ -1028,7 +1027,6 @@ def get_binary_class_metric_fn(metrics=None):
     weights:
       weights of the samples..
     """
-
     eval_metric_ops = OrderedDict()
 
     preds = graph_output['output']
@@ -1168,7 +1166,6 @@ def get_multi_binary_class_metric_fn(metrics, classes=None, class_dim=1):
     weights:
       weights of the samples..
     """
-
     eval_metric_ops = OrderedDict()
 
     preds = graph_output['output']
@@ -1357,7 +1354,6 @@ def get_multi_binary_class_uncalibrated_metric_fn(
     keep_weight (bool):
       Whether to keep weights for the metric.
   """
-
   calibrated_metric_fn = get_multi_binary_class_metric_fn(
     metrics, classes=classes, class_dim=class_dim)
   return _get_uncalibrated_metric_fn(calibrated_metric_fn, keep_weight=keep_weight)

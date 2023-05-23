@@ -77,7 +77,6 @@ class GetMetricsHook(tf.train.SessionRunHook):
             tensors as a tf.Tensor.
             See Trainer.learn for an example use-case.
         """
-
         self._get_metrics_fn = get_metrics_fn
         self._metric_tensors = None
         self.metric_values = None

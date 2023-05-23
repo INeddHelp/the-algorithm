@@ -272,7 +272,6 @@ def rehash_sparse_features_nbits(sp_a, nbits, hash_fn=multiplicative_hash):
     Returns:
       a new tf.SparseTensor
     """
-
     feature_ids = sp_a.indices[:, 1]
     feature_ids = hash_fn(feature_ids)
 
@@ -298,7 +297,6 @@ def convert_to_hparams(opt):
     NOTE: If you are using estimators, please don't call this method and directly pass python dict
     to TensorFlow estimator. Starting TensorFlow 2.0, Estimator will only accept dicts.
     """
-
     # Convert to dict so we can iterate through it cleanly.
     if isinstance(opt, argparse.Namespace):
         params_dict = vars(opt)
@@ -346,7 +344,6 @@ def dynamic_partition(features, partitions, num_partitions=2, name=None):
       - the partition tensor is automatically converted into an integer tensor.
       - defaults to num_partitions == 2
     """
-
     if not isinstance(features, (dict, list, tuple, tf.Tensor)):
         raise AssertionError(
             "features container must be a dict, list, or tuple, tf.Tensor")
@@ -769,7 +766,6 @@ def change_name_scope_from_dir(init_scope_name, final_scope_name, save_dir):
     To avoid doing this, we create a copy in backup if a backup isn't found.
     This allows us always read (from backup) and write same sized checkpoint files.
     """
-
     # Create a backup_checkpoints dir
     backup_dir = os.path.join(save_dir, "change_name_scope_backups")
     tf.io.gfile.makedirs(backup_dir)
@@ -907,7 +903,6 @@ def copy_recursive(src, dst, overwrite=False):
       dst: Destination directory.
       overwrite: Specifies if files are to be overwritten if they exist.
     """
-
     src = src.rstrip("/")
     dst = dst.rstrip("/")
 

@@ -773,7 +773,6 @@ def parse_comma_separated_list(element_type=str):
     Generates an argparse.Action that converts a string representing a comma separated list to a
     list and converts each element to a specified type.
     """
-
     # pylint: disable-msg=too-few-public-methods
     class _ParseCommaSeparatedList(argparse.Action):
         """

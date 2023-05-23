@@ -15,7 +15,6 @@ def parse_d6w_config(argv=None):
     :param argv: d6w config
     :return: dictionary containing d6w config
     """
-
     parser = argparse.ArgumentParser(
         description="See https://docbird.twitter.biz/d6w/model.html for any parameters inherited from d6w job config"
     )
