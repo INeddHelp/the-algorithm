@@ -9,7 +9,7 @@ import com.twitter.search.earlybird.config.TierInfo;
 import com.twitter.search.earlybird.partition.PartitionConfig;
 
 public final class PartitionConfigUtil {
-  private static final Logger LOG = LoggerFactory.getLogger(PartitionConfigUtil.class);
+  
 
   private PartitionConfigUtil() {
   }

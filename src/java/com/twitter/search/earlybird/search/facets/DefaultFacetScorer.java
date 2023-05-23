@@ -20,7 +20,7 @@ import com.twitter.search.earlybird.search.facets.FacetResultsCollector.Accumula
 import com.twitter.search.earlybird.thrift.ThriftSearchQuery;
 
 public class DefaultFacetScorer extends FacetScorer {
-  private static final Logger LOG = LoggerFactory.getLogger(FacetScorer.class.getName());
+  
   private static final double DEFAULT_FEATURE_WEIGHT = 0.0;
   private static final byte DEFAULT_PENALTY = 1;
 

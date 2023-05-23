@@ -21,8 +21,7 @@ import com.twitter.search.earlybird.segment.SegmentDataProvider;
 import com.twitter.search.earlybird.segment.SegmentDataReaderSet;
 
 public class ArchiveSegmentDataProvider implements SegmentDataProvider {
-  private static final org.slf4j.Logger LOG =
-      org.slf4j.LoggerFactory.getLogger(ArchiveSegmentDataProvider.class);
+  
 
   private DynamicPartitionConfig dynamicPartitionConfig;
   private final ArchiveTimeSlicer timeSlicer;

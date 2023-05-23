@@ -23,7 +23,7 @@ import com.twitter.search.queryparser.query.search.SearchOperator;
 import com.twitter.search.queryparser.query.search.SearchOperatorConstants;
 
 public abstract class EarlybirdQueryHelper {
-  private static final Logger LOG = LoggerFactory.getLogger(EarlybirdQueryHelper.class);
+  
 
   /**
    * Wraps the given query and some clauses to exclude antisocial tweets into a conjunction.

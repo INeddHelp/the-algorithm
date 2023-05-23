@@ -32,8 +32,7 @@ import com.twitter.search.earlybird.thrift.ThriftTweetSource;
 public final class ThriftSearchResultUtil {
   private ThriftSearchResultUtil() { }
 
-  private static final VisibleTokenRatioNormalizer NORMALIZER =
-      VisibleTokenRatioNormalizer.createInstance();
+  
 
   public static final Function<ThriftSearchResults, Map<ThriftLanguage, Integer>> LANG_MAP_GETTER =
       searchResults -> searchResults.getLanguageHistogram();

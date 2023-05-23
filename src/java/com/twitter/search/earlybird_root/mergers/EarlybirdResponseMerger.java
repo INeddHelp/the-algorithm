@@ -52,12 +52,9 @@ public abstract class EarlybirdResponseMerger implements EarlyTerminateTierMerge
       SearchCounter.export("no_responses_to_merge");
   private static final SearchCounter EARLYBIRD_RESPONSE_NO_MORE_RESULTS =
       SearchCounter.export("merger_earlybird_response_no_more_results");
-  private static final String PARTITION_OR_TIER_COUNTER_NAME_FORMAT =
-      "merger_waited_for_response_from_%s_counter";
-  private static final String PARTITION_OR_TIER_ERROR_COUNTER_NAME_FORMAT =
-      "merger_num_error_responses_from_%s";
-  private static final String PARTITION_OR_TIER_RESPONSE_CODE_COUNTER_NAME_FORMAT =
-      "merger_earlybird_response_code_from_%s_%s";
+  
+  
+  
 
   protected final EarlybirdResponseDebugMessageBuilder responseMessageBuilder;
   protected final EarlybirdRequestContext requestContext;

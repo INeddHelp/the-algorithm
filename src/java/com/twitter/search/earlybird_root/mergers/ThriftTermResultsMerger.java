@@ -33,8 +33,7 @@ import com.twitter.search.earlybird.thrift.ThriftTermStatisticsResults;
 public class ThriftTermResultsMerger {
   private static final Logger LOG = LoggerFactory.getLogger(ThriftTermResultsMerger.class);
 
-  private static final SearchCounter BIN_ID_GAP_COUNTER =
-      SearchCounter.export("thrift_term_results_merger_found_gap_in_bin_ids");
+  
   private static final SearchCounter MIN_COMPLETE_BIN_ID_ADJUSTED_NULL =
       SearchCounter.export("thrift_term_results_merger_min_complete_bin_id_adjusted_null");
   private static final SearchCounter MIN_COMPLETE_BIN_ID_NULL_WITHOUT_BINS =

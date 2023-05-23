@@ -15,7 +15,7 @@ import com.twitter.search.core.earlybird.index.DocIDToTweetIDMapper;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 public abstract class DeletedDocs implements Flushable {
-  private static final Logger LOG = LoggerFactory.getLogger(DeletedDocs.class);
+  
 
   /**
    * Deletes the given document.
